@@ -6,14 +6,14 @@ const rateLimit = require('express-rate-limit');
 const { loginLimiter, apiLimiter } = require('./middleware/rateLimiters');
 const { connectToDatabase } = require('./config/db');
 const cookieParser = require('cookie-parser');
-const { runStartupChecks } = require('./utils/startupCheck');
 const validate = require('./middleware/validate');
 const { signupValidator, loginValidator } = require('./validators/userValidators');
 const { addUser } = require('./services/userService');
 const { login } = require('./services/authService');
 const multer = require('multer');
 const authOptional = require('./middleware/authOptional');
-const { uploadBufferToDrive } = require('./services/driveService');
+const auth = require('./middleware/auth');
+const { uploadBufferToDrive, setFilePublic, downloadFileStream } = require('./services/driveService');
 const { saveSummaryRecord } = require('./services/summaryService');
 
 const app = express();
@@ -23,9 +23,20 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(apiLimiter);
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1 * 1024 * 1024 } });
+const upload = multer({ 
+  storage: multer.memoryStorage(), 
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = new Set([
+      'application/pdf',
+      'application/msword'
+    ]);
+    if (allowed.has(file.mimetype)) return cb(null, true);
+    cb(new Error('Only PDF, word files are allowed'));
+  }
+});
 
-app.post('/upload', authOptional, upload.single('file'), async (req, res, next) => {
+app.post('/upload', auth, upload.single('file'), async (req, res, next) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'File is required' });
     const { originalname, mimetype, size, buffer } = req.file;
@@ -37,21 +48,80 @@ app.post('/upload', authOptional, upload.single('file'), async (req, res, next) 
     
     const uploaded = await uploadBufferToDrive({ buffer, filename: originalname, mimeType: mimetype, parents });
     console.log('Drive upload success:', uploaded.id);
+    let links = uploaded;
+
+    const makePublic = (process.env.DRIVE_PUBLIC_READ || 'true').toLowerCase() === 'true';
+    if (makePublic) {
+      try {
+        links = await setFilePublic({ fileId: uploaded.id });
+      } catch (permErr) {
+        console.warn('Could not set public permission:', permErr && permErr.message ? permErr.message : permErr);
+      }
+    }
     
     const record = await saveSummaryRecord({
-      userId: req.user && req.user.id ? req.user.id : undefined,
+      userId: req.user.id,
       originalName: originalname,
       mimeType: mimetype,
       sizeBytes: size,
       driveFileId: uploaded.id,
-      webViewLink: uploaded.webViewLink,
-      webContentLink: uploaded.webContentLink
+      webViewLink: links.webViewLink,
+      webContentLink: links.webContentLink
     });
     console.log('Database save success:', record._id);
     
     res.status(201).json({ id: record._id, driveFileId: record.driveFileId, webViewLink: record.webViewLink, webContentLink: record.webContentLink });
   } catch (err) {
     console.error('Upload error:', err.message, err.stack);
+    next(err);
+  }
+});
+
+app.get('/me/summaries', auth, async (req, res, next) => {
+  try {
+    const { listSummariesByUser } = require('./services/summaryService');
+    const summaries = await listSummariesByUser(req.user.id);
+    res.status(200).json({ summaries });
+  } catch (err) {
+    next(err);
+  }
+});
+
+
+app.get('/summaries/:id/download', auth, async (req, res, next) => {
+  try {
+    const Summary = require('./models/Summary');
+    const summary = await Summary.findById(req.params.id).lean();
+    if (!summary) return res.status(404).json({ message: 'Not found' });
+    const isOwner = String(summary.userId) === String(req.user.id);
+    const isAdmin = req.user.role === 'admin';
+    if (!isOwner && !isAdmin) return res.status(403).json({ message: 'Forbidden' });
+    const { stream, name, mimeType, size } = await downloadFileStream({ fileId: summary.driveFileId });
+    res.setHeader('Content-Type', mimeType || 'application/octet-stream');
+    res.setHeader('Content-Disposition', `inline; filename="${name || 'file'}"`);
+    if (size) res.setHeader('Content-Length', size);
+    stream.on('error', (e) => next(e));
+    stream.pipe(res);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/summaries/:id/view', auth, async (req, res, next) => {
+  try {
+    const Summary = require('./models/Summary');
+    const summary = await Summary.findById(req.params.id).lean();
+    if (!summary) return res.status(404).json({ message: 'Not found' });
+    const isOwner = String(summary.userId) === String(req.user.id);
+    const isAdmin = req.user.role === 'admin';
+    if (!isOwner && !isAdmin) return res.status(403).json({ message: 'Forbidden' });
+    const { stream, name, mimeType, size } = await downloadFileStream({ fileId: summary.driveFileId });
+    res.setHeader('Content-Type', mimeType || 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${name || 'file'}"`);
+    if (size) res.setHeader('Content-Length', size);
+    stream.on('error', (e) => next(e));
+    stream.pipe(res);
+  } catch (err) {
     next(err);
   }
 });
@@ -90,8 +160,12 @@ const PORT = process.env.PORT || 5000;
 
 connectToDatabase()
   .then(() => {
+    console.log('Database connected');
     app.listen(PORT, () => {
-      runStartupChecks(app);
+      const baseUrl = process.env.WEBSITE_URL || process.env.BASE_URL || `http://localhost:${PORT}`;
+      const env = process.env.NODE_ENV || 'development';
+      console.log(`Server running at: ${baseUrl}`);
+      console.log(`Environment: ${env}`);
     });
   })
   .catch((err) => {

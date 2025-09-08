@@ -127,5 +127,50 @@ async function uploadBufferToDrive(params) {
   }
 }
 
-module.exports = { uploadBufferToDrive };
+async function setFilePublic(params) {
+  const { fileId } = params;
+  const drive = createDriveClient();
+  try {
+    await drive.permissions.create({
+      fileId,
+      requestBody: {
+        role: 'reader',
+        type: 'anyone'
+      },
+      supportsAllDrives: true
+    });
+    const { data } = await drive.files.get({
+      fileId,
+      fields: 'id, webViewLink, webContentLink',
+      supportsAllDrives: true
+    });
+    return data;
+  } catch (err) {
+    console.error('Set public permission failed:', err && err.message ? err.message : err);
+    throw err;
+  }
+}
+
+async function downloadFileStream(params) {
+  const { fileId } = params;
+  const drive = createDriveClient();
+  try {
+    const meta = await drive.files.get({
+      fileId,
+      fields: 'id, name, mimeType, size',
+      supportsAllDrives: true
+    });
+    const res = await drive.files.get({
+      fileId,
+      alt: 'media',
+      supportsAllDrives: true
+    }, { responseType: 'stream' });
+    return { stream: res.data, name: meta.data.name, mimeType: meta.data.mimeType, size: meta.data.size };
+  } catch (err) {
+    console.error('Drive download failed:', err && err.message ? err.message : err);
+    throw err;
+  }
+}
+
+module.exports = { uploadBufferToDrive, setFilePublic, downloadFileStream };
 

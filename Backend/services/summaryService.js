@@ -14,7 +14,11 @@ async function saveSummaryRecord(params) {
   return summary;
 }
 
-module.exports = { saveSummaryRecord };
+async function listSummariesByUser(userId) {
+  return Summary.find({ userId }).sort({ createdAt: -1 }).lean();
+}
+
+module.exports = { saveSummaryRecord, listSummariesByUser };
 
 
 
