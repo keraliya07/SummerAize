@@ -58,9 +58,8 @@ async function uploadBufferToDrive(params) {
         folderId: folderId
       });
 
-      const isOAuth = (process.env.DRIVE_AUTH_MODE || '').toLowerCase() === 'oauth';
-      if (isOAuth && (folderError.code === 403 || folderError.code === 404)) {
-        console.log('Proceeding without folder pre-check under OAuth (likely drive.file scope).');
+      if (folderError.code === 403 || folderError.code === 404) {
+        console.log('Proceeding without folder pre-check (OAuth mode assumed).');
         fileMetadata.parents = parents;
       } else if (folderError.code === 404) {
         throw new Error(`Google Drive folder not found: ${folderId}. Please verify the folder ID exists and access is granted.`);
@@ -100,13 +99,12 @@ async function uploadBufferToDrive(params) {
   } catch (error) {
     console.error('Drive API error:', error.message);
     console.error('Drive API error details:', error);
-    const isOAuth = (process.env.DRIVE_AUTH_MODE || '').toLowerCase() === 'oauth';
     const insufficientParent =
       (error.code === 403 || error.status === 403) &&
       typeof error.message === 'string' &&
       error.message.toLowerCase().includes('insufficient permissions for the specified parent');
-    if (isOAuth && insufficientParent && fileMetadata.parents) {
-      console.log('Retrying upload without parent under OAuth (fallback to My Drive root).');
+    if (insufficientParent && fileMetadata.parents) {
+      console.log('Retrying upload without parent (fallback to My Drive root).');
       const retryMetadata = { ...fileMetadata };
       delete retryMetadata.parents;
       try {
@@ -172,5 +170,12 @@ async function downloadFileStream(params) {
   }
 }
 
-module.exports = { uploadBufferToDrive, setFilePublic, downloadFileStream };
+async function downloadFileBuffer(params) {
+  const { fileId } = params;
+  const drive = createDriveClient();
+  const res = await drive.files.get({ fileId, alt: 'media', supportsAllDrives: true }, { responseType: 'arraybuffer' });
+  return Buffer.from(res.data);
+}
+
+module.exports = { uploadBufferToDrive, setFilePublic, downloadFileStream, downloadFileBuffer };
 

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const AppError = require('../utils/AppError');
+const { sendWelcomeEmail } = require('./emailService');
 
 async function addUser({ username, email, password, role = 'user' }) {
   const session = await mongoose.startSession();
@@ -15,8 +16,15 @@ async function addUser({ username, email, password, role = 'user' }) {
     const passwordHash = await User.hashPassword(password);
 
     const user = await User.create([
-      { username, email, passwordHash, role }
+      { 
+        username, 
+        email, 
+        passwordHash, 
+        role
+      }
     ], { session });
+
+    await sendWelcomeEmail(email, username);
 
     await session.commitTransaction();
     return user[0];
@@ -34,6 +42,7 @@ async function verifyUser({ email, password }) {
   if (!user) {
     throw new AppError('Invalid credentials', 401);
   }
+  
   const ok = await user.verifyPassword(password);
   if (!ok) {
     throw new AppError('Invalid credentials', 401);
