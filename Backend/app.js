@@ -2,8 +2,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 const express = require('express');
 const cors = require('cors');
-const rateLimit = require('express-rate-limit');
-const { loginLimiter, apiLimiter } = require('./middleware/rateLimiters');
+const {apiLimiter } = require('./middleware/rateLimiters');
 const { connectToDatabase } = require('./config/db');
 const cookieParser = require('cookie-parser');
 
@@ -39,5 +38,6 @@ connectToDatabase()
   });
 
 module.exports = app;
+
 
 

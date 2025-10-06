@@ -3,7 +3,7 @@ const User = require('../models/User');
 const AppError = require('../utils/AppError');
 const { sendWelcomeEmail } = require('./emailService');
 
-async function addUser({ username, email, password, role = 'user' }) {
+async function addUser({ username, email, password }) {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
@@ -20,7 +20,7 @@ async function addUser({ username, email, password, role = 'user' }) {
         username, 
         email, 
         passwordHash, 
-        role
+        role: 'user'
       }
     ], { session });
 

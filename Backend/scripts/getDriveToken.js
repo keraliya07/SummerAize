@@ -1,14 +1,15 @@
 //  This file is used to get the drive token for the user
 
 
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const http = require('http');
 const { google } = require('googleapis');
 
 const clientId = process.env.OAUTH_CLIENT_ID;
 const clientSecret = process.env.OAUTH_CLIENT_SECRET;
 if (!clientId || !clientSecret) {
-  console.error('Set OAUTH_CLIENT_ID and OAUTH_CLIENT_SECRET');
+  console.error('Missing OAuth env. Ensure Backend/.env has OAUTH_CLIENT_ID and OAUTH_CLIENT_SECRET');
   process.exit(1);
 }
 
@@ -19,7 +20,7 @@ const scope = ['https://www.googleapis.com/auth/drive'];
 const authUrl = oauth2.generateAuthUrl({ access_type: 'offline', prompt: 'consent', scope });
 
 const server = http.createServer(async (req, res) => {
-  const url = new URL(req.url, `http://localhost:${port}`);
+  const url = new URL(req.url, `http://localhost:${port}` || 'http://localhost:53682');
   const code = url.searchParams.get('code');
   if (!code) {
     res.statusCode = 400;

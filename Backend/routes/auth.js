@@ -9,12 +9,12 @@ const router = express.Router()
 
 // Create a new user account
 // Method: POST /signup
-// Body: { username, email, password, role? }
+// Body: { username, email, password }
 // Returns: { user, message }
 router.post('/signup', signupValidator, validate, async (req, res, next) => {
   try {
-    const { username, email, password, role } = req.body
-    const user = await addUser({ username, email, password, role })
+    const { username, email, password } = req.body
+    const user = await addUser({ username, email, password })
     const safe = { 
       id: user._id, 
       username: user.username, 

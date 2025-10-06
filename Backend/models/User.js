@@ -11,10 +11,12 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// methods is used for instance methods(can be called on the instance itself)
 userSchema.methods.verifyPassword = async function (plainPassword) {
   return bcrypt.compare(plainPassword, this.passwordHash);
 };
 
+// statics is used for static methods(can be called on the model itself)
 userSchema.statics.hashPassword = async function (plainPassword) {
   const salt = await bcrypt.genSalt(10);
   return bcrypt.hash(plainPassword, salt);

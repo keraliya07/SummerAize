@@ -70,7 +70,7 @@ async function uploadBufferToDrive(params) {
       }
     }
   } else {
-    throw new Error('GDRIVE_FOLDER_ID is required but not provided');
+    console.log('No GDRIVE_FOLDER_ID provided; uploading to My Drive root.');
   }
   
   console.log('File metadata:', fileMetadata);
@@ -177,5 +177,32 @@ async function downloadFileBuffer(params) {
   return Buffer.from(res.data);
 }
 
-module.exports = { uploadBufferToDrive, setFilePublic, downloadFileStream, downloadFileBuffer };
+async function deleteFileFromDrive(params) {
+  const { fileId } = params;
+  const drive = createDriveClient();
+  
+  console.log(`Attempting to delete file from Google Drive: ${fileId}`);
+  
+  try {
+    const result = await drive.files.delete({
+      fileId,
+      supportsAllDrives: true
+    });
+    
+    console.log('Google Drive delete successful:', result);
+    return { success: true, message: 'File deleted successfully from Google Drive' };
+  } catch (err) {
+    console.error('Drive delete failed:', err && err.message ? err.message : err);
+    console.error('Drive delete error details:', err);
+    
+    if (err.code === 404) {
+      console.warn('File not found in Google Drive (may have been deleted already)');
+      return { success: true, message: 'File not found in Google Drive (may have been deleted already)' };
+    }
+    
+    throw err;
+  }
+}
+
+module.exports = { uploadBufferToDrive, setFilePublic, downloadFileStream, downloadFileBuffer, deleteFileFromDrive };
 
