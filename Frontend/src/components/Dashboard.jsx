@@ -4,11 +4,13 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { summariesAPI, authAPI } from '../services/api.jsx';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
 import UploadModal from './UploadModal';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
-import { FileText, Download, Eye, Loader2, Clock, Save, X, Sun, Moon, Trash2 } from 'lucide-react';
+import { FileText, Download, Eye, Loader2, Clock, Save, X, Sun, Moon, Trash2, Maximize2, User, Settings, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Dashboard = () => {
