@@ -4,6 +4,8 @@ const { signupValidator, loginValidator } = require('../validators/userValidator
 const { addUser } = require('../services/userService')
 const { login } = require('../services/authService')
 const { loginLimiter } = require('../middleware/rateLimiters')
+const auth = require('../middleware/auth')
+const User = require('../models/User')
 
 const router = express.Router()
 
@@ -49,6 +51,27 @@ router.post('/login', loginLimiter, loginValidator, validate, async (req, res, n
       }, 
       token: result.token 
     })
+  } catch (err) {
+    next(err)
+  }
+})
+
+// Get current authenticated user
+// Method: GET /me
+// Returns: { user }
+router.get('/me', auth, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id).lean()
+    if (!user) return res.status(404).json({ message: 'User not found' })
+    const safe = {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    }
+    res.status(200).json({ user: safe })
   } catch (err) {
     next(err)
   }

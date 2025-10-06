@@ -75,11 +75,11 @@
   }
   
   .dark .glass-card {
-    @apply bg-gray-900/20 backdrop-blur-lg border border-gray-700/30 shadow-xl;
+    @apply bg-gray-900/50 backdrop-blur-lg border border-gray-700/50 shadow-xl;
   }
   
   .dark .glass-card:hover {
-    @apply border-gray-600/40 shadow-2xl;
+    @apply border-gray-600/60 shadow-2xl;
   }
   
   .gradient-text {

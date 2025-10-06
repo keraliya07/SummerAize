@@ -48,7 +48,7 @@ const Signup = () => {
       return;
     }
 
-    const { confirmPassword, ...signupData } = formData;
+    const { ...signupData } = formData;
     const result = await signup(signupData);
     
     if (result.success) {
@@ -69,21 +69,21 @@ const Signup = () => {
         <Button
           variant="outline"
           onClick={toggleTheme}
-          className="px-3 py-2 rounded-lg border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
+          className="group px-3 py-2 rounded-lg"
         >
-          {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+          {theme === 'light' ? (
+            <Moon className="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" />
+          ) : (
+            <Sun className="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" />
+          )}
         </Button>
       </div>
       
       {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-800 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"></div>
-      <div className="absolute top-0 left-0 w-full h-full">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-purple-300 dark:bg-purple-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-bounce-gentle"></div>
-        <div className="absolute top-40 right-20 w-72 h-72 bg-yellow-300 dark:bg-yellow-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-bounce-gentle" style={{animationDelay: '1s'}}></div>
-        <div className="absolute -bottom-8 left-40 w-72 h-72 bg-pink-300 dark:bg-pink-600 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-bounce-gentle" style={{animationDelay: '2s'}}></div>
-      </div>
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-800 dark:from-gray-800 dark:via-gray-900 dark:to-gray-950"></div>
+      {/* background accents removed */}
       
-      <Card className="w-full max-w-md glass-card animate-fade-in">
+      <Card className="w-full max-w-2xl glass-card animate-fade-in">
         <CardHeader className="text-center space-y-4">
           <div className="mx-auto w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
             <span className="text-2xl font-bold text-white">S</span>
@@ -91,14 +91,14 @@ const Signup = () => {
           <CardTitle className="text-3xl font-bold gradient-text">
             Create Account
           </CardTitle>
-          <CardDescription className="text-gray-600 text-lg">
+          <CardDescription className="text-gray-600 dark:text-gray-300 text-lg">
             Join SummerAize to start summarizing your documents
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-sm font-medium text-gray-700">Username</Label>
+              <Label htmlFor="username" className="text-sm font-medium text-gray-700 dark:text-gray-200">Username</Label>
               <Input
                 id="username"
                 name="username"
@@ -107,12 +107,12 @@ const Signup = () => {
                 onChange={handleChange}
                 placeholder="Choose a username"
                 required
-                className="w-full h-12 bg-white/50 border-white/30 focus:border-purple-500 focus:ring-purple-500/20"
+                className="w-full h-10 bg-white/50 dark:bg-gray-800/60 border-white/30 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-purple-500 focus:ring-purple-500/20"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
+              <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-200">Email</Label>
               <Input
                 id="email"
                 name="email"
@@ -121,40 +121,41 @@ const Signup = () => {
                 onChange={handleChange}
                 placeholder="Enter your email"
                 required
-                className="w-full h-12 bg-white/50 border-white/30 focus:border-purple-500 focus:ring-purple-500/20"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Create a password"
-                required
-                className="w-full h-12 bg-white/50 border-white/30 focus:border-purple-500 focus:ring-purple-500/20"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Confirm your password"
-                required
-                className="w-full h-12 bg-white/50 border-white/30 focus:border-purple-500 focus:ring-purple-500/20"
+                className="w-full h-10 bg-white/50 dark:bg-gray-800/60 border-white/30 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-purple-500 focus:ring-purple-500/20"
               />
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-200">Password</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Create a password"
+                  required
+                  className="w-full h-10 bg-white/50 dark:bg-gray-800/60 border-white/30 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-purple-500 focus:ring-purple-500/20"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700 dark:text-gray-200">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Confirm your password"
+                  required
+                  className="w-full h-10 bg-white/50 dark:bg-gray-800/60 border-white/30 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-purple-500 focus:ring-purple-500/20"
+                />
+              </div>
+            </div>
+
             {error && (
-              <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 p-3 rounded-lg border border-red-200">
+              <div className="flex items-center gap-2 text-red-600 dark:text-red-300 text-sm bg-red-50 dark:bg-red-900/30 p-3 rounded-lg border border-red-200 dark:border-red-800/60">
                 <AlertCircle className="h-4 w-4" />
                 {error}
               </div>
@@ -177,11 +178,11 @@ const Signup = () => {
           </form>
 
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
               Already have an account?{' '}
               <Link
                 to="/login"
-                className="text-purple-600 hover:text-purple-500 font-semibold transition-colors duration-200"
+                className="text-purple-600 dark:text-purple-300 hover:text-purple-500 dark:hover:text-purple-200 font-semibold transition-colors duration-200"
               >
                 Sign in
               </Link>

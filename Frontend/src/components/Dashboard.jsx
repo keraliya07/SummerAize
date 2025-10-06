@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { summariesAPI } from '../services/api.jsx';
+import { summariesAPI, authAPI } from '../services/api.jsx';
 import { Button } from './ui/button';
+import UploadModal from './UploadModal';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
-import { Upload, FileText, Download, Eye, Loader2, AlertCircle, CheckCircle, Clock, Maximize2, User, Settings, Save, X, Sun, Moon, Trash2 } from 'lucide-react';
+import { FileText, Download, Eye, Loader2, Clock, Save, X, Sun, Moon, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
+  const [me, setMe] = useState(null);
   const { theme, toggleTheme } = useTheme();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -19,9 +21,10 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [duplicateCheck, setDuplicateCheck] = useState(null);
   const [selectedSummary, setSelectedSummary] = useState(null);
-  const [activeTab, setActiveTab] = useState('summaries');
+  const [activeTab, setActiveTab] = useState('home');
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [deletingSummary, setDeletingSummary] = useState(null);
+  const [showUploader, setShowUploader] = useState(false);
   const [profileData, setProfileData] = useState({
     username: user?.username || '',
     email: user?.email || '',
@@ -34,6 +37,24 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchSummaries();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'summaries') {
+      fetchSummaries();
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    const loadMe = async () => {
+      try {
+        const { user: u } = await authAPI.getMe();
+        setMe(u);
+      } catch {
+        console.error('Failed to fetch me');
+      }
+    };
+    loadMe();
   }, []);
 
   const fetchSummaries = async () => {
@@ -224,57 +245,75 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gray-900">
       {/* Enhanced Navigation */}
       <nav className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-lg border-b border-white/20 dark:border-gray-700/30 sticky top-0 z-50">
-        <div className="w-full pl-5 pr-4 sm:pr-6 lg:pr-8">
+        <div className="w-full pl-5 pr-4 sm:pr-6 lg:pr-8 relative">
           <div className="flex justify-between h-16">
-            <div className="flex items-center space-x-3">
+            <Link to="/" className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">S</span>
               </div>
               <h1 className="text-2xl font-bold gradient-text">SummerAize</h1>
-            </div>
+            </Link>
             <div className="flex items-center space-x-4">
               <Button
                 variant="outline"
+                onClick={toggleTheme}
+                size="icon"
+                className="group rounded-md bg-gray-800/60 text-white border border-gray-700/60 hover:bg-gray-700/60"
+              >
+                {theme === 'light' ? (
+                  <Moon className="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" />
+                ) : (
+                  <Sun className="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" />
+                )}
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={`px-4 py-2 rounded-full transition-all duration-200 ${
+                      activeTab === 'profile' 
+                        ? 'bg-gray-800/60 text-white border border-gray-700/60 hover:bg-gray-700/60' 
+                        : 'bg-gray-800/60 text-white border border-gray-700/60 hover:bg-gray-700/60'
+                    }`}
+                  >
+                    <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mr-2">
+                      <span className="text-white text-xs font-semibold">{(me?.username || user?.username || '').charAt(0).toUpperCase()}</span>
+                    </div>
+                    <span className="font-medium">{me?.username || user?.username}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-[220px]">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold">{me?.username || user?.username}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{me?.email || user?.email}</span>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setActiveTab('profile')}>Profile</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout} className="text-red-600 focus:text-red-700">
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center gap-3 pointer-events-none">
+              <Button
+                variant="outline"
                 onClick={() => setActiveTab('summaries')}
-                className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                  activeTab === 'summaries' 
-                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg border-transparent' 
-                    : 'border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:border-gray-500'
+                className={`px-4 py-2 rounded-lg transition-all duration-200 pointer-events-auto ${
+                  activeTab === 'summaries'
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg border-transparent'
+                    : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:opacity-90 border-transparent'
                 }`}
               >
                 <FileText className="h-4 w-4 mr-2" />
                 Summaries
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setActiveTab('profile')}
-                className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                  activeTab === 'profile' 
-                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg border-transparent' 
-                    : 'border border-gray-300 text-gray-800 dark:text-gray-200 hover:bg-black/5 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
-                }`}
-              >
-                <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mr-2">
-                  <span className="text-white text-xs font-semibold">{user?.username?.charAt(0).toUpperCase()}</span>
-                </div>
-                <span className="font-medium">{user?.username}</span>
-              </Button>
-              <Button
-                variant="outline"
-                onClick={toggleTheme}
-                className="px-3 py-2 rounded-lg border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:border-gray-500"
-              >
-                {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={logout}
-                className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:border-red-700"
-              >
-                Logout
               </Button>
             </div>
           </div>
@@ -282,122 +321,39 @@ const Dashboard = () => {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'summaries' ? (
+        {activeTab === 'home' && (
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center py-20 md:py-28 animate-slide-up">
+                <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-gray-800/60 text-white text-sm font-semibold mb-6 border border-gray-700/60">✨ <span className="gradient-text ml-1">Powered by AI</span></div>
+                <h1 className="text-4xl md:text-6xl font-extrabold leading-tight text-gray-900 dark:text-white">
+                  Transform PDFs into <span className="relative inline-block"><span className="relative z-10 px-2 rounded-md bg-pink-200 text-gray-900">concise</span></span> summaries
+                </h1>
+                <p className="mt-4 md:mt-6 text-gray-600 dark:text-gray-300 text-lg">
+                  Get a beautiful summary reel of the document in seconds.
+                </p>
+                <div className="mt-10">
+                  <Button onClick={() => setShowUploader(true)} className="h-12 px-8 text-lg bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-full inline-flex items-center gap-2">
+                    Try SummerAize
+                    <ArrowRight className="h-5 w-5" />
+                  </Button>
+                </div>
+            </div>
+            <UploadModal
+              open={showUploader}
+              onClose={() => setShowUploader(false)}
+              file={file}
+              onFileChange={handleFileChange}
+              onUpload={handleUpload}
+              uploading={uploading}
+              duplicateCheck={duplicateCheck}
+              summaryText={duplicateCheck?.summaryText}
+            />
+          </div>
+        )}
+
+        {activeTab === 'summaries' && (
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Upload Section */}
-              <div className="lg:col-span-1">
-                <Card className="glass-card hover-lift animate-slide-up">
-                  <CardHeader className="text-center pb-6">
-                    <div className="mx-auto w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mb-4">
-                      <Upload className="h-8 w-8 text-white" />
-                    </div>
-                    <CardTitle className="text-2xl font-bold gradient-text">
-                      Upload Document
-                    </CardTitle>
-                  <CardDescription className="text-gray-600 dark:text-gray-300 text-lg">
-                    Upload PDF or Word documents to generate AI summaries
-                  </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-3">
-                      <Label htmlFor="file" className="text-sm font-semibold text-gray-700 dark:text-gray-200">Choose File</Label>
-                      <Input
-                        id="file"
-                        type="file"
-                        accept=".pdf,.doc,.docx"
-                        onChange={handleFileChange}
-                        className="w-full h-12 bg-white/50 dark:bg-gray-800/50 border-white/30 dark:border-gray-700/30 focus:border-purple-500 focus:ring-purple-500/20 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:file:bg-gray-700 dark:file:text-gray-100 dark:hover:file:bg-gray-600"
-                      />
-                    </div>
-
-                    {file && (
-                      <div className="p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl border border-green-200 animate-fade-in">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
-                            <FileText className="h-5 w-5 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-semibold text-gray-800 dark:text-gray-200">{file.name}</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-300">{formatFileSize(file.size)}</div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {duplicateCheck && (
-                      <div className={`p-4 rounded-xl border animate-fade-in ${
-                        duplicateCheck.isDuplicate 
-                          ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200' 
-                          : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'
-                      }`}>
-                        <div className="flex items-center gap-3">
-                          {duplicateCheck.isDuplicate ? (
-                            <>
-                              <AlertCircle className="h-6 w-6 text-yellow-600" />
-                              <div>
-                                <div className="font-semibold text-yellow-800">Duplicate Detected</div>
-                                <div className="text-sm text-yellow-700">This document was uploaded before</div>
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle className="h-6 w-6 text-green-600" />
-                              <div>
-                                <div className="font-semibold text-green-800">Ready to Upload</div>
-                                <div className="text-sm text-green-700">Document is unique and ready for processing</div>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button 
-                          className="w-full h-12 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg" 
-                          disabled={!file || uploading}
-                        >
-                          {uploading ? (
-                            <>
-                              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                              Uploading...
-                            </>
-                          ) : (
-                            <>
-                              <Upload className="mr-2 h-5 w-5" />
-                              Upload & Summarize
-                            </>
-                          )}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent className="glass-card">
-                        <AlertDialogHeader>
-                          <AlertDialogTitle className="text-xl font-bold">Confirm Upload</AlertDialogTitle>
-                          <AlertDialogDescription className="text-gray-600">
-                            {duplicateCheck?.isDuplicate 
-                              ? 'This document appears to be a duplicate. Do you want to proceed anyway?'
-                              : 'Are you sure you want to upload and summarize this document?'
-                            }
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel className="border-gray-300">Cancel</AlertDialogCancel>
-                          <AlertDialogAction 
-                            onClick={handleUpload}
-                            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                          >
-                            {duplicateCheck?.isDuplicate ? 'Upload Anyway' : 'Upload'}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Summaries Section */}
+            <div className="grid grid-cols-1 gap-8">
               <div className="lg:col-span-2">
                 <Card className="glass-card hover-lift animate-slide-up" style={{animationDelay: '0.2s'}}>
                   <CardHeader className="text-center pb-6">
@@ -555,7 +511,9 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        ) : (
+        )}
+
+        {activeTab === 'profile' && (
           /* Profile Section */
           <div className="max-w-4xl mx-auto">
             <Card className="glass-card hover-lift animate-slide-up">

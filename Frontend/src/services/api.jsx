@@ -39,6 +39,10 @@ export const authAPI = {
     const response = await api.post('/login', credentials);
     return response.data;
   },
+  getMe: async () => {
+    const response = await api.get('/me');
+    return response.data;
+  },
 };
 
 export const summariesAPI = {
