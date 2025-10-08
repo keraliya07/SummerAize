@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 
-const UploadModal = ({ open, onClose, file, onFileChange, onUpload, uploading, duplicateCheck }) => {
+const UploadModal = ({ open, onClose, file, onFileChange, onUpload, uploading, duplicateCheck, onViewSummary }) => {
   const overlayRef = useRef(null)
 
   useEffect(() => {
@@ -44,8 +44,8 @@ const UploadModal = ({ open, onClose, file, onFileChange, onUpload, uploading, d
                 <div className="mx-auto w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mb-4">
                   <Upload className="h-8 w-8 text-white" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-white">Upload Document</CardTitle>
-                <CardDescription className="text-gray-200/90">Upload PDF or Word documents to generate AI summaries</CardDescription>
+                <CardTitle className="text-2xl font-bold text-white">Upload File</CardTitle>
+                <CardDescription className="text-gray-200/90">Get an AI-powered summary of your PDF or Word document.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-3">
@@ -71,7 +71,7 @@ const UploadModal = ({ open, onClose, file, onFileChange, onUpload, uploading, d
                     </div>
                   </div>
                 )}
-                {duplicateCheck && (
+                {duplicateCheck && !duplicateCheck.summaryText && (
                   <div className={`p-4 rounded-xl border ${
                     duplicateCheck.isDuplicate
                       ? 'bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-700'
@@ -98,23 +98,44 @@ const UploadModal = ({ open, onClose, file, onFileChange, onUpload, uploading, d
                     </div>
                   </div>
                 )}
-                <Button
-                  onClick={onUpload}
-                  className="w-full h-12 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg"
-                  disabled={!file || uploading}
-                >
-                  {uploading ? (
-                    <div className="inline-flex items-center">
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Uploading...
+                {duplicateCheck?.summaryText && (
+                  <div className="space-y-4 p-4 rounded-xl border bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800/60 dark:to-gray-700/60 border-white/20 dark:border-gray-700/60">
+                    <div className="flex items-start justify-between mb-1">
+                      <div className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
+                        <span className="truncate max-w-[55vw]">{duplicateCheck.originalName || file?.name || 'Uploaded Document'}</span>
+                      </div>
                     </div>
-                  ) : (
-                    <div className="inline-flex items-center">
-                      <Upload className="mr-2 h-5 w-5" />
-                      Upload & Summarize
+                    <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap line-clamp-3">
+                      {duplicateCheck.summaryText}
+                    </p>
+                    <div className="flex gap-3">
+                      {onViewSummary && (
+                        <Button onClick={onViewSummary} className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">View Summary</Button>
+                      )}
+                      <Button onClick={onClose} variant="outline" className="bg-white/60 dark:bg-gray-800/60">Close</Button>
                     </div>
-                  )}
-                </Button>
+                  </div>
+                )}
+                {!duplicateCheck?.summaryText && (
+                  <Button
+                    onClick={onUpload}
+                    className="w-full h-12 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg"
+                    disabled={!file || uploading}
+                  >
+                    {uploading ? (
+                      <div className="inline-flex items-center">
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Uploading...
+                      </div>
+                    ) : (
+                      <div className="inline-flex items-center">
+                        <Upload className="mr-2 h-5 w-5" />
+                        Upload & Summarize
+                      </div>
+                    )}
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </Motion.div>

@@ -108,8 +108,9 @@ const Dashboard = () => {
         toast.success('File uploaded and summarized successfully!');
       }
       
+      // keep preview data so modal can show filename and size
+      setDuplicateCheck({ ...result, originalName: file.name, sizeBytes: file.size });
       setFile(null);
-      setDuplicateCheck(null);
       fetchSummaries();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Upload failed');
@@ -246,6 +247,13 @@ const Dashboard = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const openUploaderFresh = () => {
+    setFile(null);
+    setDuplicateCheck(null);
+    setUploading(false);
+    setShowUploader(true);
+  };
+
   return (
     <div className="min-h-screen bg-gray-900">
       {/* Enhanced Navigation */}
@@ -334,7 +342,7 @@ const Dashboard = () => {
                   Get a beautiful summary reel of the document in seconds.
                 </p>
                 <div className="mt-10">
-                  <Button onClick={() => setShowUploader(true)} className="h-12 px-8 text-lg bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-full inline-flex items-center gap-2">
+                  <Button onClick={openUploaderFresh} className="h-12 px-8 text-lg bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-full inline-flex items-center gap-2">
                     Try SummerAize
                     <ArrowRight className="h-5 w-5" />
                   </Button>
@@ -342,13 +350,52 @@ const Dashboard = () => {
             </div>
             <UploadModal
               open={showUploader}
-              onClose={() => setShowUploader(false)}
+              onClose={() => { setShowUploader(false); setFile(null); setDuplicateCheck(null); setUploading(false); }}
               file={file}
               onFileChange={handleFileChange}
               onUpload={handleUpload}
               uploading={uploading}
               duplicateCheck={duplicateCheck}
               summaryText={duplicateCheck?.summaryText}
+              onViewSummary={async () => {
+                if (!duplicateCheck?.summaryText) return;
+                try {
+                  if (duplicateCheck.id) {
+                    const { summary } = await summariesAPI.getSummary(duplicateCheck.id);
+                    setSelectedSummary(summary || {
+                      _id: duplicateCheck.id,
+                      originalName: duplicateCheck.originalName || file?.name || 'Uploaded Document',
+                      sizeBytes: duplicateCheck.sizeBytes || file?.size || 0,
+                      webViewLink: duplicateCheck.webViewLink,
+                      webContentLink: duplicateCheck.webContentLink,
+                      summaryText: duplicateCheck.summaryText,
+                      createdAt: new Date().toISOString(),
+                    });
+                  } else {
+                    setSelectedSummary({
+                      _id: undefined,
+                      originalName: duplicateCheck.originalName || file?.name || 'Uploaded Document',
+                      sizeBytes: duplicateCheck.sizeBytes || file?.size || 0,
+                      webViewLink: duplicateCheck.webViewLink,
+                      webContentLink: duplicateCheck.webContentLink,
+                      summaryText: duplicateCheck.summaryText,
+                      createdAt: new Date().toISOString(),
+                    });
+                  }
+                } catch {
+                  setSelectedSummary({
+                    _id: duplicateCheck.id,
+                    originalName: duplicateCheck.originalName || file?.name || 'Uploaded Document',
+                    sizeBytes: duplicateCheck.sizeBytes || file?.size || 0,
+                    webViewLink: duplicateCheck.webViewLink,
+                    webContentLink: duplicateCheck.webContentLink,
+                    summaryText: duplicateCheck.summaryText,
+                    createdAt: new Date().toISOString(),
+                  });
+                } finally {
+                  setShowUploader(false);
+                }
+              }}
             />
           </div>
         )}
