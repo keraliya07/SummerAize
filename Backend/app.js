@@ -8,7 +8,18 @@ const cookieParser = require('cookie-parser');
 
 const app = express();
 
-app.use(cors());
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Server is running' });
+});
+
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(apiLimiter);
@@ -24,11 +35,12 @@ const PORT = process.env.PORT || 5000;
 
 connectToDatabase()
   .then(() => {
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       const baseUrl = process.env.WEBSITE_URL || process.env.BASE_URL || `http://localhost:${PORT}`;
       const env = process.env.NODE_ENV || 'development';
       console.log(`\n✅ Server running at: ${baseUrl}`);
       console.log(`📦 Environment: ${env}`);
+      console.log(`🚀 Server listening on 0.0.0.0:${PORT}`);
       console.log(`🚀 Server ready to accept connections\n`);
     });
   })
