@@ -65,7 +65,8 @@ const Login = () => {
         throw new Error('API URL is not configured');
       }
       
-      window.location.href = `${API_BASE_URL}/auth/google`;
+      const baseUrl = API_BASE_URL.replace(/\/+$/, '');
+      window.location.href = `${baseUrl}/auth/google`;
     } catch (error) {
       console.error('Google login error:', error);
       const errorMessage = error.message || 'Failed to initiate Google login';
