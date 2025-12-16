@@ -12,7 +12,11 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  const token = localStorage.getItem('token');
+  const userData = localStorage.getItem('user');
+  const hasAuth = isAuthenticated || (token && userData);
+
+  return hasAuth ? children : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

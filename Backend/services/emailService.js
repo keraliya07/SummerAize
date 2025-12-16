@@ -1,11 +1,27 @@
 const nodemailer = require('nodemailer');
+const { getDriveAuth } = require('./googleAuth');
 
-function createTransporter() {
+async function createTransporter() {
+  const auth = await getDriveAuth();
+  const tokenResponse = await auth.getAccessToken();
+  
+  console.log('🔍 OAuth2 Debug Info:');
+  console.log('EMAIL_USER:', process.env.EMAIL_USER);
+  console.log('OAUTH_CLIENT_ID:', process.env.OAUTH_CLIENT_ID ? 'Set' : 'Missing');
+  console.log('OAUTH_CLIENT_SECRET:', process.env.OAUTH_CLIENT_SECRET ? 'Set' : 'Missing');
+  console.log('OAUTH_REFRESH_TOKEN:', process.env.OAUTH_REFRESH_TOKEN ? 'Set' : 'Missing');
+  console.log('Access Token:', tokenResponse.token ? 'Generated' : 'Failed');
+  console.log('Auth Credentials:', auth.credentials);
+  
   return nodemailer.createTransport({
     service: 'gmail',
     auth: {
+      type: 'OAuth2',
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD
+      clientId: process.env.OAUTH_CLIENT_ID,
+      clientSecret: process.env.OAUTH_CLIENT_SECRET,
+      refreshToken: process.env.OAUTH_REFRESH_TOKEN,
+      accessToken: auth.credentials.access_token
     }
   });
 }
@@ -71,11 +87,11 @@ The SummerAize Team
 
 async function sendWelcomeEmail(email, username) {
   try {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-      throw new Error('Email configuration missing: EMAIL_USER and EMAIL_PASSWORD must be set');
+    if (!process.env.EMAIL_USER || !process.env.OAUTH_CLIENT_ID || !process.env.OAUTH_CLIENT_SECRET || !process.env.OAUTH_REFRESH_TOKEN) {
+      throw new Error('Email configuration missing: EMAIL_USER, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, and OAUTH_REFRESH_TOKEN must be set');
     }
 
-    const transporter = createTransporter();
+    const transporter = await createTransporter();
 
     await transporter.verify();
     console.log('✅ Email server connection verified');
@@ -95,10 +111,8 @@ async function sendWelcomeEmail(email, username) {
   } catch (error) {
     console.error('❌ Error sending welcome email:', error);
 
-    if (error.message.includes('Invalid login')) {
-      throw new Error('Invalid credentials: Use Gmail App Password instead of your regular Gmail password.');
-    } else if (error.message.includes('Authentication failed')) {
-      throw new Error('Authentication failed. Check EMAIL_USER and EMAIL_PASSWORD.');
+    if (error.message.includes('Invalid login') || error.message.includes('Authentication failed')) {
+      throw new Error('OAuth2 authentication failed. Check EMAIL_REFRESH_TOKEN and OAuth2 credentials.');
     } else if (error.message.includes('configuration missing')) {
       throw error;
     } else {
@@ -107,4 +121,54 @@ async function sendWelcomeEmail(email, username) {
   }
 }
 
-module.exports = { sendWelcomeEmail };
+function createResetPasswordEmail(resetUrl) {
+  return {
+    subject: 'Reset your SummerAize password',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333; text-align: center;">Reset your password</h2>
+        <p>We received a request to reset your password. Click the button below to set a new one. This link will expire shortly.</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${resetUrl}"
+             style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+            Reset Password
+          </a>
+        </div>
+        <p>If you did not request this, you can safely ignore this email.</p>
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+        <p style="color: #666; font-size: 12px; text-align: center;">This link is valid for a limited time.</p>
+      </div>
+    `,
+    text: `Reset your password: ${resetUrl}\nIf you did not request this, ignore this email.`
+  };
+}
+
+async function sendResetPasswordEmail(email, resetUrl) {
+  try {
+    if (!process.env.EMAIL_USER || !process.env.OAUTH_CLIENT_ID || !process.env.OAUTH_CLIENT_SECRET || !process.env.OAUTH_REFRESH_TOKEN) {
+      throw new Error('Email configuration missing: EMAIL_USER, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, and OAUTH_REFRESH_TOKEN must be set');
+    }
+    const transporter = await createTransporter();
+    await transporter.verify();
+    const emailContent = createResetPasswordEmail(resetUrl);
+    const result = await transporter.sendMail({
+      from: `"SummerAize Team" <${process.env.EMAIL_USER}>`,
+      to: email,
+      ...emailContent
+    });
+    console.log('✅ Reset password email sent:', result.messageId);
+    return true;
+  } catch (error) {
+    console.error('❌ Error sending reset email:', error);
+    
+    if (error.message.includes('Invalid login') || error.message.includes('BadCredentials')) {
+      throw new Error('OAuth2 authentication failed. Please regenerate tokens with Gmail scope enabled.');
+    } else if (error.message.includes('configuration missing')) {
+      throw error;
+    } else {
+      throw new Error(`Failed to send reset email: ${error.message}`);
+    }
+  }
+}
+
+module.exports = { sendWelcomeEmail, sendResetPasswordEmail };

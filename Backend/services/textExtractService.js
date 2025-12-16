@@ -20,9 +20,11 @@ async function getDriveFileBuffer(fileId) {
   }
 }
 
-async function extractPdfTextFromDrive(fileId) {
+async function extractPdfTextFromBuffer(buffer) {
   try {
-    const buffer = await getDriveFileBuffer(fileId);
+    if (!buffer || buffer.length === 0) {
+      throw new Error('Buffer is empty or invalid');
+    }
     
     console.log(`Processing PDF buffer: ${buffer.length} bytes`);
     
@@ -57,6 +59,16 @@ async function extractPdfTextFromDrive(fileId) {
   }
 }
 
-module.exports = { getDriveFileBuffer, extractPdfTextFromDrive };
+async function extractPdfTextFromDrive(fileId) {
+  try {
+    const buffer = await getDriveFileBuffer(fileId);
+    return await extractPdfTextFromBuffer(buffer);
+  } catch (error) {
+    console.error('PDF text extraction from Drive error:', error.message);
+    throw error;
+  }
+}
+
+module.exports = { getDriveFileBuffer, extractPdfTextFromDrive, extractPdfTextFromBuffer };
 
 

@@ -14,22 +14,22 @@ A modern React frontend for the SummerAize document summarization application, b
 
 ## Tech Stack
 
-- **React 18** - Modern React with hooks
-- **Vite** - Fast build tool and dev server
-- **shadcn/ui** - Beautiful, accessible UI components
-- **Tailwind CSS** - Utility-first CSS framework
-- **React Router** - Client-side routing
-- **Axios** - HTTP client for API calls
-- **Lucide React** - Beautiful icons
-- **Sonner** - Toast notifications
+- **React 18**
+- **Vite**
+- **shadcn/ui**
+- **Tailwind CSS**
+- **React Router**
+- **Axios**
+- **Lucide React**
+- **Sonner**
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 16+ 
-- npm or yarn
-- Backend server running on port 5000
+- Node.js 18+
+- npm
+- Backend server running on port 5000 (default)
 
 ### Installation
 
@@ -38,7 +38,7 @@ A modern React frontend for the SummerAize document summarization application, b
 npm install
 ```
 
-2. Create a `.env` file in the root directory:
+2. Create a `.env` file in the project root:
 ```env
 VITE_API_URL=http://localhost:5000
 ```
@@ -48,15 +48,16 @@ VITE_API_URL=http://localhost:5000
 npm run dev
 ```
 
-4. Open your browser and navigate to `http://localhost:5173`
+4. Open your browser at `http://localhost:5173`
 
 ### Building for Production
 
 ```bash
 npm run build
+npm run preview # optional local preview
 ```
 
-The built files will be in the `dist` directory.
+The production build is emitted to the `dist` directory.
 
 ## Project Structure
 
@@ -64,57 +65,30 @@ The built files will be in the `dist` directory.
 src/
 ├── components/
 │   ├── auth/
-│   │   ├── Login.jsx          # Login form component
-│   │   └── Signup.jsx         # Signup form component
-│   ├── ui/                    # shadcn/ui components
-│   ├── Dashboard.jsx          # Main dashboard component
-│   └── ProtectedRoute.jsx    # Route protection component
+│   │   ├── Login.jsx
+│   │   └── Signup.jsx
+│   ├── ui/
+│   ├── Dashboard.jsx
+│   └── ProtectedRoute.jsx
 ├── contexts/
-│   └── AuthContext.js         # Authentication context
+│   ├── AuthContext.jsx
+│   └── ThemeContext.jsx
 ├── services/
-│   └── api.js                 # API service layer
+│   └── api.jsx
 ├── lib/
-│   └── utils.js               # Utility functions
-├── App.jsx                    # Main app component
-└── main.jsx                   # App entry point
+│   └── utils.js
+├── App.jsx
+└── main.jsx
 ```
 
 ## API Integration
 
 The frontend integrates with the SummerAize backend API:
 
-- **Authentication**: `/signup`, `/login`
+- **Authentication**: `/signup`, `/login`, `/me`
 - **File Upload**: `/upload`, `/upload-before-check`
-- **Summaries**: `/me/summaries`, `/summaries/:id`
-- **File Operations**: `/summaries/:id/download`, `/summaries/:id/view`
-
-## Features Overview
-
-### Authentication
-- Secure JWT-based authentication
-- Automatic token refresh
-- Protected routes
-- User session management
-
-### File Upload
-- Support for PDF and Word documents
-- File size validation (max 10MB)
-- Duplicate detection before upload
-- Progress indicators and error handling
-
-### Dashboard
-- Clean, modern interface
-- File upload area with drag-and-drop
-- Summary list with search and filtering
-- Document preview and download
-- Real-time status updates
-
-### UI/UX
-- Responsive design for all screen sizes
-- Dark/light theme support
-- Accessible components
-- Smooth animations and transitions
-- Toast notifications for feedback
+- **Summaries**: `/me/summaries`, `/summaries/:id`, `/summaries/:id/summarize`
+- **File Operations**: `/summaries/:id/download`, `/summaries/:id/view`, `DELETE /summaries/:id`
 
 ## Contributing
 
@@ -126,4 +100,4 @@ The frontend integrates with the SummerAize backend API:
 
 ## License
 
-This project is licensed under the MIT License.
+MIT

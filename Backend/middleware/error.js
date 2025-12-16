@@ -43,19 +43,24 @@ function errorHandler(err, req, res, next) {
     });
   }
   
-  // Groq/GPT provider input too large or TPM exceeded (treat as document too large)
+  // Token limit or document too large errors
   if (
     (err.status === 413) ||
     (err.code === 413) ||
     (typeof err.message === 'string' && (
       err.message.includes('Request too large for model') ||
       err.message.includes('tokens per minute') ||
-      err.message.includes('rate_limit_exceeded')
+      err.message.includes('rate_limit_exceeded') ||
+      err.message.includes('too large to process') ||
+      err.message.includes('context length') ||
+      err.message.includes('token limit') ||
+      err.message.includes('Document content is too large')
     ))
   ) {
     return res.status(413).json({
-      message: 'Document is too large. Please upload a smaller document.',
-      code: 'DOCUMENT_TOO_LARGE'
+      message: 'Document is too large for processing. The system will attempt to process it in sections, but very large documents may require splitting.',
+      code: 'DOCUMENT_TOO_LARGE',
+      suggestion: 'Try uploading a smaller document or wait for chunked processing to complete'
     });
   }
 

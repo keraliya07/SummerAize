@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authAPI } from '../services/api.jsx';
 
 const AuthContext = createContext();
@@ -66,11 +66,27 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const handleGoogleCallback = useCallback((token, userData) => {
+    try {
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+      return { success: true };
+    } catch (error) {
+      console.error('Error handling Google callback:', error);
+      return { 
+        success: false, 
+        error: 'Failed to complete authentication' 
+      };
+    }
+  }, []);
+
   const value = {
     user,
     login,
     signup,
     logout,
+    handleGoogleCallback,
     loading,
     isAuthenticated: !!user,
   };

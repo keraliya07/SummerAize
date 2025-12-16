@@ -24,16 +24,21 @@ const PORT = process.env.PORT || 5000;
 
 connectToDatabase()
   .then(() => {
-    console.log('Database connected');
     app.listen(PORT, () => {
       const baseUrl = process.env.WEBSITE_URL || process.env.BASE_URL || `http://localhost:${PORT}`;
       const env = process.env.NODE_ENV || 'development';
-      console.log(`Server running at: ${baseUrl}`);
-      console.log(`Environment: ${env}`);
+      console.log(`\n✅ Server running at: ${baseUrl}`);
+      console.log(`📦 Environment: ${env}`);
+      console.log(`🚀 Server ready to accept connections\n`);
     });
   })
   .catch((err) => {
-    console.error('Startup error', { message: err && err.message ? err.message : String(err) });
+    console.error('\n❌ Startup error:', err.message || String(err));
+    console.error('\n💡 Troubleshooting tips:');
+    console.error('   1. Check if MONGODB_URI is set in your .env file');
+    console.error('   2. Verify your MongoDB connection string is correct');
+    console.error('   3. Check your internet connection');
+    console.error('   4. If using MongoDB Atlas, verify the cluster is running\n');
     process.exit(1);
   });
 

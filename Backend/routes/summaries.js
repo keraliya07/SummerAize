@@ -3,6 +3,7 @@ const multer = require('multer')
 const auth = require('../middleware/auth')
 const { uploadBufferToDrive, setFilePublic, downloadFileStream } = require('../services/driveService')
 const { saveSummaryRecord, generateAndStoreSummary, generateDocumentHash, checkDuplicateDocument, quickDuplicateCheck, deleteSummaryRecord } = require('../services/summaryService')
+const { extractPdfTextFromBuffer } = require('../services/textExtractService')
 
 const router = express.Router()
 
@@ -92,7 +93,17 @@ router.post('/upload', auth, upload.single('file'), async (req, res, next) => {
     }
 
     const parents = process.env.GDRIVE_FOLDER_ID ? [process.env.GDRIVE_FOLDER_ID] : undefined
-    const uploaded = await uploadBufferToDrive({ buffer, filename: originalname, mimeType: mimetype, parents })
+    
+    console.log('Starting parallel operations: Drive upload and text extraction...')
+    
+    const [uploaded, extractedText] = await Promise.all([
+      uploadBufferToDrive({ buffer, filename: originalname, mimeType: mimetype, parents }),
+      extractPdfTextFromBuffer(buffer).catch(err => {
+        console.warn('Text extraction failed, will retry from Drive:', err.message)
+        return null
+      })
+    ])
+    
     let links = uploaded
 
     const makePublic = (process.env.DRIVE_PUBLIC_READ || 'true').toLowerCase() === 'true'
@@ -116,7 +127,10 @@ router.post('/upload', auth, upload.single('file'), async (req, res, next) => {
     })
 
     try {
-      const summaryResult = await generateAndStoreSummary({ summaryId: record._id })
+      const summaryResult = await generateAndStoreSummary({ 
+        summaryId: record._id,
+        text: extractedText
+      })
 
       res.status(201).json({
         id: record._id,

@@ -19,7 +19,7 @@ const CardHeader = React.forwardRef(({ className, ...props }, ref) => (
 CardHeader.displayName = "CardHeader"
 
 const CardTitle = React.forwardRef(({ className, ...props }, ref) => (
-  <div
+  <h3
     ref={ref}
     className={cn("font-semibold leading-none tracking-tight", className)}
     {...props} />
@@ -47,4 +47,12 @@ const CardFooter = React.forwardRef(({ className, ...props }, ref) => (
 ))
 CardFooter.displayName = "CardFooter"
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+const CardAction = React.forwardRef(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("flex items-center", className)}
+    {...props} />
+))
+CardAction.displayName = "CardAction"
+
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, CardAction }

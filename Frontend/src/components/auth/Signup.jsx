@@ -6,7 +6,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { AlertCircle, Loader2, Sun, Moon } from 'lucide-react';
+import { AlertCircle, Loader2, Sun, Moon, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Signup = () => {
@@ -18,9 +18,11 @@ const Signup = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const { signup } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -64,23 +66,8 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Theme Toggle */}
-      <div className="absolute top-4 right-4 z-10">
-        <Button
-          variant="outline"
-          onClick={toggleTheme}
-          className="group px-3 py-2 rounded-lg"
-        >
-          {theme === 'light' ? (
-            <Moon className="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" />
-          ) : (
-            <Sun className="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" />
-          )}
-        </Button>
-      </div>
-      
       {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-800 dark:from-gray-800 dark:via-gray-900 dark:to-gray-950"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-950"></div>
       {/* background accents removed */}
       
       <Card className="w-full max-w-2xl glass-card animate-fade-in">
@@ -91,14 +78,14 @@ const Signup = () => {
           <CardTitle className="text-3xl font-bold gradient-text">
             Create Account
           </CardTitle>
-          <CardDescription className="text-gray-600 dark:text-gray-300 text-lg">
+          <CardDescription className="text-gray-300 text-lg">
             Join SummerAize to start summarizing your documents
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-sm font-medium text-gray-700 dark:text-gray-200">Username</Label>
+              <Label htmlFor="username" className="text-sm font-medium text-gray-200">Username</Label>
               <Input
                 id="username"
                 name="username"
@@ -107,12 +94,12 @@ const Signup = () => {
                 onChange={handleChange}
                 placeholder="Choose a username"
                 required
-                className="w-full h-10 bg-white/50 dark:bg-gray-800/60 border-white/30 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-purple-500 focus:ring-purple-500/20"
+                className="w-full h-10 bg-gray-800/60 border-gray-600 text-gray-100 placeholder:text-gray-400 focus:border-purple-500 focus:ring-purple-500/20"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-200">Email</Label>
+              <Label htmlFor="email" className="text-sm font-medium text-gray-200">Email</Label>
               <Input
                 id="email"
                 name="email"
@@ -121,41 +108,69 @@ const Signup = () => {
                 onChange={handleChange}
                 placeholder="Enter your email"
                 required
-                className="w-full h-10 bg-white/50 dark:bg-gray-800/60 border-white/30 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-purple-500 focus:ring-purple-500/20"
+                className="w-full h-10 bg-gray-800/60 border-gray-600 text-gray-100 placeholder:text-gray-400 focus:border-purple-500 focus:ring-purple-500/20"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-200">Password</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Create a password"
-                  required
-                  className="w-full h-10 bg-white/50 dark:bg-gray-800/60 border-white/30 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-purple-500 focus:ring-purple-500/20"
-                />
+                <Label htmlFor="password" className="text-sm font-medium text-gray-200">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Create a password"
+                    required
+                    className="w-full h-10 bg-gray-800/60 border-gray-600 text-gray-100 placeholder:text-gray-400 focus:border-purple-500 focus:ring-purple-500/20 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors duration-200 focus:outline-none"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700 dark:text-gray-200">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Confirm your password"
-                  required
-                  className="w-full h-10 bg-white/50 dark:bg-gray-800/60 border-white/30 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-purple-500 focus:ring-purple-500/20"
-                />
+                <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-200">Confirm Password</Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="Confirm your password"
+                    required
+                    className="w-full h-10 bg-gray-800/60 border-gray-600 text-gray-100 placeholder:text-gray-400 focus:border-purple-500 focus:ring-purple-500/20 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors duration-200 focus:outline-none"
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 text-red-600 dark:text-red-300 text-sm bg-red-50 dark:bg-red-900/30 p-3 rounded-lg border border-red-200 dark:border-red-800/60">
+              <div className="flex items-center gap-2 text-red-300 text-sm bg-red-900/30 p-3 rounded-lg border border-red-800/60">
                 <AlertCircle className="h-4 w-4" />
                 {error}
               </div>
@@ -178,11 +193,11 @@ const Signup = () => {
           </form>
 
           <div className="text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-300">
+            <p className="text-sm text-gray-300">
               Already have an account?{' '}
               <Link
                 to="/login"
-                className="text-purple-600 dark:text-purple-300 hover:text-purple-500 dark:hover:text-purple-200 font-semibold transition-colors duration-200"
+                className="text-purple-300 hover:text-purple-200 font-semibold transition-colors duration-200"
               >
                 Sign in
               </Link>

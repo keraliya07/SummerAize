@@ -1,22 +1,21 @@
 ## SummerAize Backend
 
-Node.js/Express backend for document upload to Google Drive, extraction, and summarization using Groq API. Includes JWT auth, MongoDB persistence, rate limiting, and file streaming.
+Node.js/Express backend for document upload to Google Drive, text extraction, and summarization using the Groq API. Includes JWT auth, MongoDB persistence, rate limiting, structured errors, and secure file streaming.
 
 ### Requirements
 - Node.js 18+
-- MongoDB database (Atlas)
+- MongoDB database (Atlas recommended)
 - Google Cloud credentials for Drive API
 - Groq API key for text summarization
-- Email service (Gmail recommended)
+- Email service account (e.g., Gmail with app password)
 
 ### Getting Started
-1. Clone and open the backend directory.
-2. Install dependencies:
+1. Install dependencies:
 ```bash
 npm install
 ```
-3. Create a `.env` file (see Environment Variables).
-4. Start the server:
+2. Create a `.env` file (see Environment Variables).
+3. Start the server:
 ```bash
 # Development with reload
 npm run dev
@@ -44,7 +43,7 @@ Mandatory:
 
 Optional:
 - `PORT`: Server port (default 5000)
-- `BASE_URL`: Base URL for email verification links (e.g., https://yourdomain.com)
+- `BASE_URL` or `WEBSITE_URL`: Base URL for links/logging
 - `DRIVE_PUBLIC_READ`: `true|false` to make files world-readable after upload (default true)
 - `NODE_ENV`: `development|production`
 
@@ -54,9 +53,11 @@ app.js
 config/
   db.js
 middleware/
-  auth.js, authOptional.js, error.js, rateLimiters.js, validate.js
+  auth.js, error.js, rateLimiters.js, validate.js
 models/
   User.js, Summary.js
+routes/
+  auth.js, summaries.js
 services/
   authService.js, driveService.js, googleAuth.js,
   textExtractService.js, textSummarizeService.js, summaryService.js
@@ -74,20 +75,20 @@ Base URL: `http://localhost:5000`
 Auth
 - POST `/signup` → Create user (sends welcome email)
 - POST `/login` → Login and receive JWT
-
-Health
-- GET `/health` → Service status
+- GET `/me` → Current authenticated user
 
 Summaries & Files (JWT required)
 - POST `/upload-before-check` → Check if document is duplicate before uploading
 - POST `/upload` → Upload a file to Drive and create a summary record (checks for duplicates)
 - GET `/me/summaries` → List current user's summary records
+- GET `/summaries/:id` → Fetch a summary record
 - POST `/summaries/:id/summarize` → Generate and save summary text via Groq
 - POST `/summaries/:id/view` → Stream the original file inline
 - GET `/summaries/:id/download` → Download the original file
+- DELETE `/summaries/:id` → Delete a summary record and the Drive file
 
 ### Auth
-Use the `Authorization: Bearer <token>` header for protected endpoints. Obtain the token from `/login`.
+Send `Authorization: Bearer <token>` for protected endpoints. Obtain the token from `/login`.
 
 ### Example Requests
 Signup:
@@ -104,14 +105,14 @@ curl -X POST http://localhost:5000/login \
   -d '{"email":"alice@example.com","password":"Passw0rd!"}'
 ```
 
-Check for duplicate document:
+Pre-check duplicate document:
 ```bash
 curl -X POST http://localhost:5000/upload-before-check \
   -H "Authorization: Bearer <TOKEN>" \
   -F file=@/path/to/file.pdf
 ```
 
-Upload (PDF or DOC/DOCX up to 10MB):
+Upload (PDF or DOC up to 10MB):
 ```bash
 curl -X POST http://localhost:5000/upload \
   -H "Authorization: Bearer <TOKEN>" \
@@ -144,15 +145,21 @@ curl -L -X GET http://localhost:5000/summaries/<SUMMARY_ID>/download \
   -H "Authorization: Bearer <TOKEN>" -o file
 ```
 
+Delete record:
+```bash
+curl -X DELETE http://localhost:5000/summaries/<SUMMARY_ID> \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
 ### Upload Constraints
 - Max size: 10 MB
 - Allowed MIME types: `application/pdf`, `application/msword`
 
-### Notes on Google Drive Setup
-- Ensure the specified `GDRIVE_FOLDER_ID` exists and the OAuth client account has access to that folder.
-- Scopes must allow Drive file operations; the helper script can aid in obtaining a refresh token.
+### Google Drive Setup
+- Ensure `GDRIVE_FOLDER_ID` exists and the OAuth client has access to the folder.
+- Scopes must allow Drive file operations; use the helper script to obtain a refresh token.
 
-### Error Handling
+### Error Handling & Limits
 - Standardized JSON errors with proper HTTP status codes
 - Rate limiting enabled for general API and login attempts
 

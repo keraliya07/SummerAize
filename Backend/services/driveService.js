@@ -1,8 +1,8 @@
 const { google } = require('googleapis');
 const { getDriveAuth } = require('./googleAuth');
 
-function createDriveClient() {
-  const auth = getDriveAuth();
+async function createDriveClient() {
+  const auth = await getDriveAuth();
   return google.drive({ version: 'v3', auth });
 }
 
@@ -25,7 +25,7 @@ async function uploadBufferToDrive(params) {
     parents: parents || 'none' 
   });
   
-  const drive = createDriveClient();
+  const drive = await createDriveClient();
   const fileMetadata = { name: filename };
   
   if (parents && parents.length) {
@@ -127,7 +127,7 @@ async function uploadBufferToDrive(params) {
 
 async function setFilePublic(params) {
   const { fileId } = params;
-  const drive = createDriveClient();
+  const drive = await createDriveClient();
   try {
     await drive.permissions.create({
       fileId,
@@ -151,7 +151,7 @@ async function setFilePublic(params) {
 
 async function downloadFileStream(params) {
   const { fileId } = params;
-  const drive = createDriveClient();
+  const drive = await createDriveClient();
   try {
     const meta = await drive.files.get({
       fileId,
@@ -172,14 +172,14 @@ async function downloadFileStream(params) {
 
 async function downloadFileBuffer(params) {
   const { fileId } = params;
-  const drive = createDriveClient();
+  const drive = await createDriveClient();
   const res = await drive.files.get({ fileId, alt: 'media', supportsAllDrives: true }, { responseType: 'arraybuffer' });
   return Buffer.from(res.data);
 }
 
 async function deleteFileFromDrive(params) {
   const { fileId } = params;
-  const drive = createDriveClient();
+  const drive = await createDriveClient();
   
   console.log(`Attempting to delete file from Google Drive: ${fileId}`);
   

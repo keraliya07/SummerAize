@@ -43,28 +43,29 @@ async function listSummariesByUser(userId) {
 }
 
 async function generateAndStoreSummary(params) {
-  const { summaryId, model } = params;
+  const { summaryId, model, text } = params;
   const record = await Summary.findById(summaryId);
   if (!record) throw new Error('Summary record not found');
   
   try {
     console.log(`Starting summary generation for document: ${record.originalName}`);
     
-    const buffer = await getDriveFileBuffer(record.driveFileId);
-    console.log(`Downloaded buffer size: ${buffer.length} bytes`);
+    let extractedText = text;
     
-    const text = await require('pdf-parse')(buffer, {
-      max: 0,
-      version: 'v1.10.100'
-    }).then((d) => d.text);
+    if (!extractedText) {
+      const { extractPdfTextFromBuffer } = require('./textExtractService');
+      const buffer = await getDriveFileBuffer(record.driveFileId);
+      console.log(`Downloaded buffer size: ${buffer.length} bytes`);
+      extractedText = await extractPdfTextFromBuffer(buffer);
+    }
     
-    if (!text || text.trim().length === 0) {
+    if (!extractedText || extractedText.trim().length === 0) {
       throw new Error('No text content found in PDF. The document may be image-based or corrupted.');
     }
     
-    console.log(`Extracted text length: ${text.length} characters`);
+    console.log(`Extracted text length: ${extractedText.length} characters`);
     
-    const { summaryText, modelName } = await summarizeTextWithGroq({ text, model });
+    const { summaryText, modelName } = await summarizeTextWithGroq({ text: extractedText, model });
     
     record.summaryText = summaryText;
     record.summaryModel = modelName;
