@@ -356,7 +356,7 @@ async function summarizeTextWithGroq(params = { text: '', model: 'llama-3.3-70b-
       }
     }
     
-    async function createFallbackSummary(chunk, index) {
+    function createFallbackSummary(chunk, index) {
       const previewLength = Math.min(500, chunk.length);
       const preview = chunk.slice(0, previewLength).replace(/\s+/g, ' ').trim();
       return `[Section ${index + 1} - Summary unavailable due to processing limitations]\nKey content preview: ${preview}${chunk.length > previewLength ? '...' : ''}`;
