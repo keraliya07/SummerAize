@@ -12,6 +12,31 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'Server is running' });
 });
 
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    message: 'SummerAize API Server',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      auth: {
+        signup: 'POST /signup',
+        login: 'POST /login',
+        google: 'GET /auth/google',
+        me: 'GET /me'
+      }
+    }
+  });
+});
+
+app.use((req, res, next) => {
+  if (req.url && req.url.includes('//')) {
+    const [path, query] = req.url.split('?');
+    const normalizedPath = path.replace(/\/+/g, '/');
+    req.url = query ? `${normalizedPath}?${query}` : normalizedPath;
+  }
+  next();
+});
+
 const corsOptions = {
   origin: process.env.FRONTEND_URL || true,
   credentials: true,
