@@ -203,7 +203,17 @@ const Dashboard = () => {
         <div className="w-full pl-5 pr-4 sm:pr-6 lg:pr-8 relative">
           <div className="flex justify-between h-16">
             <Link to="/" className="flex items-center space-x-3">
-              <img src={logo} alt="SummerAize Logo" className="w-10 h-10" />
+              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                <img 
+                  src={logo} 
+                  alt="SummerAize Logo" 
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    console.error('Logo failed to load:', logo);
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
               <h1 className="text-2xl font-bold gradient-text">SummerAize</h1>
             </Link>
             <div className="flex items-center space-x-4">
