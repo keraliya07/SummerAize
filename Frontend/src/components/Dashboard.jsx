@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
 import { summariesAPI, authAPI } from '../services/api.jsx';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -17,7 +16,6 @@ import logo from '../assets/logo.svg';
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const [me, setMe] = useState(null);
-  const { theme } = useTheme();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [summaries, setSummaries] = useState([]);
@@ -202,19 +200,20 @@ const Dashboard = () => {
       <nav className="bg-gray-900/80 backdrop-blur-lg shadow-lg border-b border-gray-700/30 sticky top-0 z-50">
         <div className="w-full pl-5 pr-4 sm:pr-6 lg:pr-8 relative">
           <div className="flex justify-between h-16">
-            <Link to="/" className="flex items-center space-x-3">
-              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+            <Link to="/" className="flex items-center space-x-2.5 hover:opacity-80 transition-opacity">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center flex-shrink-0 relative">
                 <img 
                   src={logo} 
                   alt="SummerAize Logo" 
                   className="w-full h-full object-contain"
+                  style={{ display: 'block', maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto' }}
                   onError={(e) => {
                     console.error('Logo failed to load:', logo);
                     e.target.style.display = 'none';
                   }}
                 />
               </div>
-              <h1 className="text-2xl font-bold gradient-text">SummerAize</h1>
+              <h1 className="text-xl sm:text-2xl font-bold gradient-text">SummerAize</h1>
             </Link>
             <div className="flex items-center space-x-4">
               <DropdownMenu>
