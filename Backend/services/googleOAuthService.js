@@ -1,13 +1,12 @@
 const { google } = require('googleapis');
 const User = require('../models/User');
+const { getBackendUrl } = require('../utils/urlConfig');
 
 function createGoogleOAuthClient() {
   const clientId = process.env.GOOGLE_CLIENT_ID || process.env.OAUTH_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET || process.env.OAUTH_CLIENT_SECRET;
   
-  // Use PORT from environment or default to 5000
-  const port = process.env.PORT || 5000;
-  const backendUrl = process.env.BACKEND_URL || process.env.BASE_URL || `http://localhost:${port}`;
+  const backendUrl = getBackendUrl();
   const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${backendUrl}/auth/google/callback`;
 
   if (!clientId || !clientSecret) {

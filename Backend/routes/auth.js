@@ -12,8 +12,18 @@ const { sendResetPasswordEmail } = require('../services/emailService')
 const { checkTokenHealth } = require('../services/googleAuth')
 const { getAuthUrl, getUserInfo, findOrCreateGoogleUser } = require('../services/googleOAuthService')
 const { signToken } = require('../utils/jwt')
+const { getFrontendUrl } = require('../utils/urlConfig')
 
 const router = express.Router()
+
+function getSafeFrontendUrl() {
+  try {
+    return getFrontendUrl();
+  } catch (err) {
+    console.warn('⚠️  Frontend URL not configured, using localhost fallback');
+    return 'http://localhost:5173';
+  }
+}
 
 // Create a new user account
 // Method: POST /signup
@@ -102,7 +112,7 @@ router.post('/forgot-password', async (req, res, next) => {
     user.resetPasswordExpires = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
     await user.save()
 
-    const siteUrl = process.env.WEBSITE_URL || process.env.BASE_URL || 'http://localhost:5173'
+    const siteUrl = getSafeFrontendUrl()
     const resetUrl = `${siteUrl}/reset-password?token=${rawToken}&email=${encodeURIComponent(email)}`
     try {
       await sendResetPasswordEmail(email, resetUrl)
@@ -172,7 +182,7 @@ router.get('/auth/google', async (req, res, next) => {
     res.redirect(authUrl)
   } catch (err) {
     console.error('Error generating Google OAuth URL:', err.message || err)
-    const frontendUrl = process.env.WEBSITE_URL || process.env.BASE_URL || 'http://localhost:5173'
+    const frontendUrl = getSafeFrontendUrl()
     try {
       res.redirect(`${frontendUrl}/login?error=${encodeURIComponent('Failed to initiate Google login. Please check server configuration.')}`)
     } catch (redirectErr) {
@@ -188,7 +198,7 @@ router.get('/auth/google/callback', async (req, res, next) => {
 
     if (error) {
       console.error('Google OAuth error:', error, error_description)
-      const frontendUrl = process.env.WEBSITE_URL || process.env.BASE_URL || 'http://localhost:5173'
+      const frontendUrl = getSafeFrontendUrl()
       let errorMessage = 'Google authentication failed'
       
       if (error === 'access_denied') {
@@ -212,7 +222,7 @@ router.get('/auth/google/callback', async (req, res, next) => {
     }
 
     if (!code) {
-      const frontendUrl = process.env.WEBSITE_URL || process.env.BASE_URL || 'http://localhost:5173'
+      const frontendUrl = getSafeFrontendUrl()
       try {
         return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent('Google authentication failed')}`)
       } catch (redirectErr) {
@@ -236,7 +246,7 @@ router.get('/auth/google/callback', async (req, res, next) => {
       throw new Error('Failed to generate authentication token')
     }
 
-    const frontendUrl = process.env.WEBSITE_URL || process.env.BASE_URL || 'http://localhost:5173'
+    const frontendUrl = getSafeFrontendUrl()
     const tokenParam = encodeURIComponent(token)
     const userParam = encodeURIComponent(JSON.stringify({
       id: user._id.toString(),
@@ -253,7 +263,7 @@ router.get('/auth/google/callback', async (req, res, next) => {
     }
   } catch (err) {
     console.error('Google OAuth callback error:', err)
-    const frontendUrl = process.env.WEBSITE_URL || process.env.BASE_URL || 'http://localhost:5173'
+    const frontendUrl = getSafeFrontendUrl()
     try {
       const errorMessage = err.message || 'Authentication failed. Please try again.'
       res.redirect(`${frontendUrl}/login?error=${encodeURIComponent(errorMessage)}`)
