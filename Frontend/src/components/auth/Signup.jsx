@@ -8,6 +8,7 @@ import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { AlertCircle, Loader2, Sun, Moon, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
+import logo from '../../assets/logo.svg';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -72,8 +73,8 @@ const Signup = () => {
       
       <Card className="w-full max-w-2xl glass-card animate-fade-in">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
-            <span className="text-2xl font-bold text-white">S</span>
+          <div className="mx-auto w-16 h-16 flex items-center justify-center">
+            <img src={logo} alt="SummerAize Logo" className="w-16 h-16" />
           </div>
           <CardTitle className="text-3xl font-bold gradient-text">
             Create Account

@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { FileText, Download, Eye, Loader2, Clock, X, Sun, Moon, Trash2, Maximize2, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+import logo from '../assets/logo.svg';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -202,9 +203,7 @@ const Dashboard = () => {
         <div className="w-full pl-5 pr-4 sm:pr-6 lg:pr-8 relative">
           <div className="flex justify-between h-16">
             <Link to="/" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">S</span>
-              </div>
+              <img src={logo} alt="SummerAize Logo" className="w-10 h-10" />
               <h1 className="text-2xl font-bold gradient-text">SummerAize</h1>
             </Link>
             <div className="flex items-center space-x-4">

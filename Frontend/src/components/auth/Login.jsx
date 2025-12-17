@@ -7,6 +7,7 @@ import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
+import logo from '../../assets/logo.svg';
 
 const Login = () => {
   const [searchParams] = useSearchParams();
@@ -84,8 +85,8 @@ const Login = () => {
       
       <Card className="w-full max-w-md mx-auto glass-card animate-fade-in">
         <CardHeader className="text-center space-y-3 py-6">
-          <div className="mx-auto w-14 h-14 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
-            <span className="text-xl font-bold text-white">S</span>
+          <div className="mx-auto w-14 h-14 flex items-center justify-center">
+            <img src={logo} alt="SummerAize Logo" className="w-14 h-14" />
           </div>
           <CardTitle className="text-2xl font-bold gradient-text">
             Welcome Back

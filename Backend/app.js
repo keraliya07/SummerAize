@@ -39,7 +39,9 @@ app.use((req, res, next) => {
 });
 
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || process.env.WEBSITE_URL || (process.env.NODE_ENV === 'production' ? undefined : true),
+  origin: process.env.NODE_ENV === 'production' 
+    ? (process.env.FRONTEND_URL || process.env.WEBSITE_URL || getFrontendUrl())
+    : (process.env.FRONTEND_URL || process.env.WEBSITE_URL || true),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -62,14 +64,7 @@ const PORT = process.env.PORT || 5000;
 connectToDatabase()
   .then(() => {
     app.listen(PORT, '0.0.0.0', () => {
-      let baseUrl;
-      try {
-        baseUrl = getBackendUrl();
-      } catch (err) {
-        baseUrl = `http://localhost:${PORT}`;
-        console.warn(`⚠️  Warning: ${err.message}`);
-        console.warn('   Using localhost as fallback. Set BACKEND_URL or BASE_URL for production.');
-      }
+      const baseUrl = getBackendUrl();
       const env = process.env.NODE_ENV || 'development';
       console.log(`\n✅ Server running at: ${baseUrl}`);
       console.log(`📦 Environment: ${env}`);

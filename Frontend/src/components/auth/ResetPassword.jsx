@@ -6,6 +6,7 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
 import { authAPI } from '../../services/api';
+import logo from '../../assets/logo.svg';
 
 function useQuery() {
   const { search } = useLocation();
@@ -54,7 +55,10 @@ const ResetPassword = () => {
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-950"></div>
       <Card className="w-full max-w-md glass-card animate-fade-in">
-        <CardHeader className="text-center space-y-2">
+        <CardHeader className="text-center space-y-3 py-6">
+          <div className="mx-auto w-14 h-14 flex items-center justify-center">
+            <img src={logo} alt="SummerAize Logo" className="w-14 h-14" />
+          </div>
           <CardTitle className="text-2xl font-bold gradient-text">Reset Password</CardTitle>
           <CardDescription className="text-gray-300">Enter a new password for {email}</CardDescription>
         </CardHeader>
