@@ -48,6 +48,15 @@ const Dashboard = () => {
     loadMe();
   }, []);
 
+  useEffect(() => {
+    if (!selectedSummary) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') closeFullSummary();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [selectedSummary]);
+
   const fetchSummaries = async () => {
     try {
       const response = await summariesAPI.getSummaries();
@@ -200,7 +209,11 @@ const Dashboard = () => {
       <nav className="bg-gray-900/80 backdrop-blur-lg shadow-lg border-b border-gray-700/30 sticky top-0 z-50">
         <div className="w-full pl-5 pr-4 sm:pr-6 lg:pr-8 relative">
           <div className="flex justify-between h-16">
-            <Link to="/" className="flex items-center space-x-2.5 hover:opacity-80 transition-opacity">
+            <Link 
+              to="/dashboard" 
+              onClick={() => setActiveTab('home')}
+              className="flex items-center space-x-2.5 hover:opacity-80 transition-opacity"
+            >
               <div className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center flex-shrink-0 relative">
                 <img 
                   src={logo} 
@@ -332,10 +345,26 @@ const Dashboard = () => {
         )}
 
         {activeTab === 'summaries' && (
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 gap-8">
-              <div className="lg:col-span-2">
-                <Card className="glass-card hover-lift animate-slide-up" style={{animationDelay: '0.2s'}}>
+          <div
+            className="w-full min-h-[60vh]"
+            onClick={() => setActiveTab('home')}
+          >
+            <div className="max-w-6xl mx-auto">
+              <div className="grid grid-cols-1 gap-8">
+                <div className="lg:col-span-2">
+                <Card 
+                  className="glass-card hover-lift animate-slide-up relative" 
+                  style={{animationDelay: '0.2s'}}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setActiveTab('home')}
+                    className="absolute top-4 right-4 h-8 w-8 p-0 hover:bg-gray-800 rounded-full flex-shrink-0 text-gray-300 z-10"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                   <CardHeader className="text-center pb-4 md:pb-6">
                     <div className="mx-auto w-12 h-12 md:w-16 md:h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mb-3 md:mb-4">
                       <FileText className="h-6 w-6 md:h-8 md:w-8 text-white" />
@@ -486,6 +515,7 @@ const Dashboard = () => {
                     )}
                   </CardContent>
                 </Card>
+                </div>
               </div>
             </div>
           </div>
@@ -495,11 +525,26 @@ const Dashboard = () => {
 
       {/* Full Summary Modal */}
       {selectedSummary && (
-        <AlertDialog open={!!selectedSummary} onOpenChange={closeFullSummary}>
-          <AlertDialogContent className="max-w-[95vw] md:max-w-5xl max-h-[90vh] overflow-y-auto mx-2 md:mx-auto">
-            <AlertDialogHeader>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-2"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            closeFullSummary();
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          <div
+            className="max-w-[95vw] md:max-w-5xl max-h-[90vh] overflow-y-auto mx-2 md:mx-auto bg-gray-950 rounded-2xl border border-gray-800 shadow-2xl"
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-4 md:px-6 pt-4 md:pt-6">
               <div className="flex items-start justify-between gap-3">
-                <AlertDialogTitle className="flex items-center gap-2 md:gap-3 text-lg md:text-2xl flex-1 min-w-0">
+                <div className="flex items-center gap-2 md:gap-3 text-lg md:text-2xl flex-1 min-w-0">
                   <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
                     <FileText className="h-4 w-4 md:h-6 md:w-6 text-white" />
                   </div>
@@ -509,110 +554,112 @@ const Dashboard = () => {
                       Complete AI-generated summary
                     </div>
                   </div>
-                </AlertDialogTitle>
+                </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={closeFullSummary}
-                  className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full flex-shrink-0"
+                  className="h-8 w-8 p-0 hover:bg-gray-800 rounded-full flex-shrink-0 text-gray-300"
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-            </AlertDialogHeader>
-            <div className="py-4 md:py-6">
-              <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-4 md:p-6 rounded-xl border border-gray-600">
-                <h4 className="font-bold text-gray-100 mb-3 md:mb-4 text-base md:text-lg flex items-center gap-2">
-                  <div className="w-2 h-2 md:w-3 md:h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
-                  AI Summary
-                </h4>
-                <div className="prose prose-sm md:prose-lg max-w-none">
-                  <p className="text-gray-200 whitespace-pre-wrap leading-relaxed text-sm md:text-base font-medium">
-                    {selectedSummary.summaryText}
-                  </p>
+            </div>
+            <div className="px-4 md:px-6 pb-4 md:pb-6">
+              <div className="py-4 md:py-6">
+                <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-4 md:p-6 rounded-xl border border-gray-600">
+                  <h4 className="font-bold text-gray-100 mb-3 md:mb-4 text-base md:text-lg flex items-center gap-2">
+                    <div className="w-2 h-2 md:w-3 md:h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
+                    AI Summary
+                  </h4>
+                  <div className="prose prose-sm md:prose-lg max-w-none">
+                    <p className="text-gray-200 whitespace-pre-wrap leading-relaxed text-sm md:text-base font-medium">
+                      {selectedSummary.summaryText}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 md:mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex flex-wrap items-center gap-3 md:gap-6 text-xs md:text-sm text-gray-400">
+                    <span className="flex items-center gap-2">
+                      <Clock className="h-3 w-3 md:h-4 md:w-4" />
+                      {formatDate(selectedSummary.createdAt)}
+                    </span>
+                    <span className="px-2 md:px-3 py-1 bg-gray-700 rounded-full text-xs font-medium text-gray-100">
+                      {formatFileSize(selectedSummary.sizeBytes)}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2 md:gap-3 w-full sm:w-auto">
+                    <Button
+                      variant="outline"
+                      onClick={() => handleView(selectedSummary._id)}
+                      className="bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500 flex-1 sm:flex-none text-xs md:text-sm px-3 md:px-4"
+                    >
+                      <Eye className="h-3 w-3 md:h-4 md:w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">View Original</span>
+                      <span className="sm:hidden">View</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleDownload(selectedSummary._id)}
+                      className="bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500 flex-1 sm:flex-none text-xs md:text-sm px-3 md:px-4"
+                    >
+                      <Download className="h-3 w-3 md:h-4 md:w-4 sm:mr-2" />
+                      Download
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          disabled={deletingSummary === selectedSummary._id}
+                          className="bg-gray-700/50 border border-red-800 text-red-400 hover:text-red-300 hover:bg-red-900/20 hover:border-red-700 flex-1 sm:flex-none text-xs md:text-sm px-3 md:px-4"
+                        >
+                          {deletingSummary === selectedSummary._id ? (
+                            <Loader2 className="h-3 w-3 md:h-4 md:w-4 sm:mr-2 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-3 w-3 md:h-4 md:w-4 sm:mr-2" />
+                          )}
+                          Delete
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="glass-card max-w-[90vw] md:max-w-md">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="text-lg md:text-xl font-bold text-red-400">
+                            Delete Document
+                          </AlertDialogTitle>
+                          <AlertDialogDescription className="text-sm md:text-base text-gray-300">
+                            Are you sure you want to delete "{selectedSummary.originalName}"? This action cannot be undone and will permanently remove the document from both your account and Google Drive.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                          <AlertDialogCancel className="border-gray-300 w-full sm:w-auto">Cancel</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={async () => {
+                              await handleDelete(selectedSummary._id);
+                              closeFullSummary();
+                            }}
+                            className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto"
+                          >
+                            Delete Document
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
               </div>
-              <div className="mt-4 md:mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex flex-wrap items-center gap-3 md:gap-6 text-xs md:text-sm text-gray-400">
-                  <span className="flex items-center gap-2">
-                    <Clock className="h-3 w-3 md:h-4 md:w-4" />
-                    {formatDate(selectedSummary.createdAt)}
-                  </span>
-                  <span className="px-2 md:px-3 py-1 bg-gray-700 rounded-full text-xs font-medium text-gray-100">
-                    {formatFileSize(selectedSummary.sizeBytes)}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-2 md:gap-3 w-full sm:w-auto">
+              <div className="pt-2 md:pt-4 border-t border-gray-800 mt-2 md:mt-4">
+                <div className="flex justify-center w-full">
                   <Button
-                    variant="outline"
-                    onClick={() => handleView(selectedSummary._id)}
-                    className="bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500 flex-1 sm:flex-none text-xs md:text-sm px-3 md:px-4"
+                    onClick={closeFullSummary}
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-6 md:px-8 py-2 md:py-3 text-base md:text-lg font-semibold w-full sm:w-auto"
                   >
-                    <Eye className="h-3 w-3 md:h-4 md:w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">View Original</span>
-                    <span className="sm:hidden">View</span>
+                    Close Summary
                   </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => handleDownload(selectedSummary._id)}
-                    className="bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500 flex-1 sm:flex-none text-xs md:text-sm px-3 md:px-4"
-                  >
-                    <Download className="h-3 w-3 md:h-4 md:w-4 sm:mr-2" />
-                    Download
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        disabled={deletingSummary === selectedSummary._id}
-                        className="bg-gray-700/50 border border-red-800 text-red-400 hover:text-red-300 hover:bg-red-900/20 hover:border-red-700 flex-1 sm:flex-none text-xs md:text-sm px-3 md:px-4"
-                      >
-                        {deletingSummary === selectedSummary._id ? (
-                          <Loader2 className="h-3 w-3 md:h-4 md:w-4 sm:mr-2 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-3 w-3 md:h-4 md:w-4 sm:mr-2" />
-                        )}
-                        Delete
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent className="glass-card max-w-[90vw] md:max-w-md">
-                      <AlertDialogHeader>
-                        <AlertDialogTitle className="text-lg md:text-xl font-bold text-red-400">
-                          Delete Document
-                        </AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm md:text-base text-gray-300">
-                          Are you sure you want to delete "{selectedSummary.originalName}"? This action cannot be undone and will permanently remove the document from both your account and Google Drive.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-                        <AlertDialogCancel className="border-gray-300 w-full sm:w-auto">Cancel</AlertDialogCancel>
-                        <AlertDialogAction 
-                          onClick={async () => {
-                            await handleDelete(selectedSummary._id);
-                            closeFullSummary();
-                          }}
-                          className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto"
-                        >
-                          Delete Document
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
                 </div>
               </div>
             </div>
-            <AlertDialogFooter className="pt-4 bg-transparent">
-              <div className="flex justify-center w-full">
-                <AlertDialogAction 
-                  onClick={closeFullSummary}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-6 md:px-8 py-2 md:py-3 text-base md:text-lg font-semibold w-full sm:w-auto"
-                >
-                  Close Summary
-                </AlertDialogAction>
-              </div>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+          </div>
+        </div>
       )}
     </div>
   );
