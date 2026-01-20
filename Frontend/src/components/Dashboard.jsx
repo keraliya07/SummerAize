@@ -253,7 +253,7 @@ const Dashboard = () => {
                     : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:opacity-90 border-transparent'
                 }`}
               >
-                <FileText className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
+                <FileText className="h-3 w-3 md:h-4 md:w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Summaries</span>
               </Button>
             </div>
@@ -368,97 +368,96 @@ const Dashboard = () => {
                         {summaries.map((summary, index) => (
                           <Card key={summary._id} className="bg-gray-800/60 backdrop-blur-sm border border-gray-700/30 hover:border-gray-600/50 transition-all duration-300 hover:shadow-lg animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
                             <CardContent className="p-4 md:p-6">
-                              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-3 mb-3">
-                                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                                      <FileText className="h-5 w-5 text-white" />
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-3 mb-3">
+                                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <FileText className="h-5 w-5 text-white" />
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <h3 className="font-bold text-gray-100 text-base md:text-lg truncate">
+                                      {summary.originalName}
+                                    </h3>
+                                    <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-400 mt-1">
+                                      <span className="flex items-center gap-1">
+                                        <Clock className="h-3 w-3 md:h-4 md:w-4" />
+                                        <span className="whitespace-nowrap">{formatDate(summary.createdAt)}</span>
+                                      </span>
+                                      <span className="px-2 py-1 bg-gray-700 rounded-full text-xs font-medium text-gray-100">
+                                        {formatFileSize(summary.sizeBytes)}
+                                      </span>
                                     </div>
-                                    <div className="min-w-0 flex-1">
-                                      <h3 className="font-bold text-gray-100 text-base md:text-lg truncate">
-                                        {summary.originalName}
-                                      </h3>
-                                      <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-400 mt-1">
-                                        <span className="flex items-center gap-1">
-                                          <Clock className="h-3 w-3 md:h-4 md:w-4" />
-                                          <span className="whitespace-nowrap">{formatDate(summary.createdAt)}</span>
-                                        </span>
-                                        <span className="px-2 py-1 bg-gray-700 rounded-full text-xs font-medium text-gray-100">
-                                          {formatFileSize(summary.sizeBytes)}
-                                        </span>
+                                  </div>
+                                </div>
+                                
+                                {summary.summaryText ? (
+                                  <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-3 md:p-4 rounded-xl border border-gray-600 mb-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+                                      <h4 className="font-semibold text-gray-100 flex items-center gap-2 text-sm md:text-base">
+                                        <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
+                                        AI Summary Preview
+                                      </h4>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => viewFullSummary(summary)}
+                                        className="h-8 px-3 text-xs bg-gray-700/50 text-gray-100 border border-gray-600 hover:bg-gray-700/70 hover:text-gray-100 hover:border-gray-500 shrink-0 whitespace-nowrap self-start sm:self-auto"
+                                      >
+                                        <Maximize2 className="h-3 w-3 mr-1" />
+                                        Full View
+                                      </Button>
+                                    </div>
+                                    <p className="text-xs md:text-sm text-gray-200 leading-relaxed line-clamp-3 font-medium">
+                                      {summary.summaryText}
+                                    </p>
+                                  </div>
+                                ) : (
+                                  <div className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 p-3 md:p-4 rounded-xl border border-yellow-700 mb-4">
+                                    <div className="flex items-center gap-3">
+                                      <Loader2 className="h-4 w-4 md:h-5 md:w-5 text-yellow-400 animate-spin flex-shrink-0" />
+                                      <div>
+                                        <div className="font-semibold text-yellow-200 text-sm md:text-base">Generating Summary</div>
+                                        <div className="text-xs md:text-sm text-yellow-300">AI is processing your document...</div>
                                       </div>
                                     </div>
                                   </div>
-                                  
-                                  {summary.summaryText ? (
-                                    <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-3 md:p-4 rounded-xl border border-gray-600">
-                                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
-                                        <h4 className="font-semibold text-gray-100 flex items-center gap-2 text-sm md:text-base">
-                                          <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
-                                          AI Summary Preview
-                                        </h4>
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => viewFullSummary(summary)}
-                                          className="h-8 px-3 text-xs bg-gray-700/50 text-gray-100 border border-gray-600 hover:bg-gray-700/70 hover:text-gray-100 hover:border-gray-500 shrink-0 whitespace-nowrap self-start sm:self-auto"
-                                        >
-                                          <Maximize2 className="h-3 w-3 mr-1" />
-                                          Full View
-                                        </Button>
-                                      </div>
-                                      <p className="text-xs md:text-sm text-gray-200 leading-relaxed line-clamp-3 font-medium">
-                                        {summary.summaryText}
-                                      </p>
-                                    </div>
-                                  ) : (
-                                    <div className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 p-3 md:p-4 rounded-xl border border-yellow-700">
-                                      <div className="flex items-center gap-3">
-                                        <Loader2 className="h-4 w-4 md:h-5 md:w-5 text-yellow-400 animate-spin flex-shrink-0" />
-                                        <div>
-                                          <div className="font-semibold text-yellow-200 text-sm md:text-base">Generating Summary</div>
-                                          <div className="text-xs md:text-sm text-yellow-300">AI is processing your document...</div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                                
-                                <div className="flex flex-row md:flex-col items-stretch md:items-center gap-2 md:ml-6">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleView(summary._id)}
-                                    className="h-10 px-3 md:px-4 bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500 flex-1 md:flex-none text-xs md:text-sm"
-                                  >
-                                    <Eye className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
-                                    <span className="hidden sm:inline md:inline">View</span>
-                                  </Button>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleDownload(summary._id)}
-                                    className="h-10 px-3 md:px-4 bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500 flex-1 md:flex-none text-xs md:text-sm"
-                                  >
-                                    <Download className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
-                                    <span className="hidden sm:inline md:inline">Download</span>
-                                  </Button>
-                                  <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={deletingSummary === summary._id}
-                                        className="h-10 px-3 md:px-4 bg-gray-700/50 border border-red-800 text-red-400 hover:text-red-300 hover:bg-red-900/20 hover:border-red-700 flex-1 md:flex-none text-xs md:text-sm"
-                                      >
-                                        {deletingSummary === summary._id ? (
-                                          <Loader2 className="h-3 w-3 md:h-4 md:w-4 md:mr-2 animate-spin" />
-                                        ) : (
-                                          <Trash2 className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
-                                        )}
-                                        <span className="hidden sm:inline md:inline">Delete</span>
-                                      </Button>
-                                    </AlertDialogTrigger>
+                                )}
+                              </div>
+                              
+                              <div className="flex flex-row items-stretch gap-2 mt-4">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleView(summary._id)}
+                                  className="h-10 px-3 md:px-4 bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500 flex-1 text-xs md:text-sm"
+                                >
+                                  <Eye className="h-3 w-3 md:h-4 md:w-4 sm:mr-2" />
+                                  <span className="hidden sm:inline md:inline">View</span>
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDownload(summary._id)}
+                                  className="h-10 px-3 md:px-4 bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500 flex-1 text-xs md:text-sm"
+                                >
+                                  <Download className="h-3 w-3 md:h-4 md:w-4 sm:mr-2" />
+                                  <span className="hidden sm:inline md:inline">Download</span>
+                                </Button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      disabled={deletingSummary === summary._id}
+                                      className="h-10 px-3 md:px-4 bg-gray-700/50 border border-red-800 text-red-400 hover:text-red-300 hover:bg-red-900/20 hover:border-red-700 flex-1 text-xs md:text-sm"
+                                    >
+                                      {deletingSummary === summary._id ? (
+                                        <Loader2 className="h-3 w-3 md:h-4 md:w-4 sm:mr-2 animate-spin" />
+                                      ) : (
+                                        <Trash2 className="h-3 w-3 md:h-4 md:w-4 sm:mr-2" />
+                                      )}
+                                      <span className="hidden sm:inline md:inline">Delete</span>
+                                    </Button>
+                                  </AlertDialogTrigger>
                                     <AlertDialogContent className="glass-card max-w-[90vw] md:max-w-md">
                                       <AlertDialogHeader>
                                         <AlertDialogTitle className="text-lg md:text-xl font-bold text-red-400">
@@ -479,7 +478,6 @@ const Dashboard = () => {
                                       </AlertDialogFooter>
                                     </AlertDialogContent>
                                   </AlertDialog>
-                                </div>
                               </div>
                             </CardContent>
                           </Card>
@@ -550,7 +548,7 @@ const Dashboard = () => {
                     onClick={() => handleView(selectedSummary._id)}
                     className="bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500 flex-1 sm:flex-none text-xs md:text-sm px-3 md:px-4"
                   >
-                    <Eye className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
+                    <Eye className="h-3 w-3 md:h-4 md:w-4 sm:mr-2" />
                     <span className="hidden sm:inline">View Original</span>
                     <span className="sm:hidden">View</span>
                   </Button>
@@ -559,7 +557,7 @@ const Dashboard = () => {
                     onClick={() => handleDownload(selectedSummary._id)}
                     className="bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500 flex-1 sm:flex-none text-xs md:text-sm px-3 md:px-4"
                   >
-                    <Download className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
+                    <Download className="h-3 w-3 md:h-4 md:w-4 sm:mr-2" />
                     Download
                   </Button>
                   <AlertDialog>
@@ -570,9 +568,9 @@ const Dashboard = () => {
                         className="bg-gray-700/50 border border-red-800 text-red-400 hover:text-red-300 hover:bg-red-900/20 hover:border-red-700 flex-1 sm:flex-none text-xs md:text-sm px-3 md:px-4"
                       >
                         {deletingSummary === selectedSummary._id ? (
-                          <Loader2 className="h-3 w-3 md:h-4 md:w-4 md:mr-2 animate-spin" />
+                          <Loader2 className="h-3 w-3 md:h-4 md:w-4 sm:mr-2 animate-spin" />
                         ) : (
-                          <Trash2 className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
+                          <Trash2 className="h-3 w-3 md:h-4 md:w-4 sm:mr-2" />
                         )}
                         Delete
                       </Button>
