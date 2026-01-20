@@ -72,19 +72,19 @@ const Signup = () => {
       {/* background accents removed */}
       
       <Card className="w-full max-w-2xl glass-card animate-fade-in">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 flex items-center justify-center">
-            <img src={logo} alt="SummerAize Logo" className="w-16 h-16" />
+        <CardHeader className="text-center space-y-3 md:space-y-4 py-4 md:py-6">
+          <div className="mx-auto w-12 h-12 md:w-16 md:h-16 flex items-center justify-center">
+            <img src={logo} alt="SummerAize Logo" className="w-12 h-12 md:w-16 md:h-16" />
           </div>
-          <CardTitle className="text-3xl font-bold gradient-text">
+          <CardTitle className="text-2xl md:text-3xl font-bold gradient-text">
             Create Account
           </CardTitle>
-          <CardDescription className="text-gray-300 text-lg">
+          <CardDescription className="text-gray-300 text-sm md:text-lg">
             Join SummerAize to start summarizing your documents
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <CardContent className="space-y-4 md:space-y-6 px-4 md:px-6 pb-4 md:pb-6">
+          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
             <div className="space-y-2">
               <Label htmlFor="username" className="text-sm font-medium text-gray-200">Username</Label>
               <Input
@@ -179,12 +179,12 @@ const Signup = () => {
 
             <Button
               type="submit"
-              className="w-full h-12 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg"
+              className="w-full h-11 md:h-12 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg text-sm md:text-base"
               disabled={loading}
             >
               {loading ? (
                 <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 md:h-5 md:w-5 animate-spin" />
                   Creating account...
                 </>
               ) : (

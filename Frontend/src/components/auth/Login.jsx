@@ -84,18 +84,18 @@ const Login = () => {
       {/* background accents removed */}
       
       <Card className="w-full max-w-md mx-auto glass-card animate-fade-in">
-        <CardHeader className="text-center space-y-3 py-6">
-          <div className="mx-auto w-14 h-14 flex items-center justify-center">
-            <img src={logo} alt="SummerAize Logo" className="w-14 h-14" />
+        <CardHeader className="text-center space-y-2 md:space-y-3 py-4 md:py-6">
+          <div className="mx-auto w-12 h-12 md:w-14 md:h-14 flex items-center justify-center">
+            <img src={logo} alt="SummerAize Logo" className="w-12 h-12 md:w-14 md:h-14" />
           </div>
-          <CardTitle className="text-2xl font-bold gradient-text">
+          <CardTitle className="text-xl md:text-2xl font-bold gradient-text">
             Welcome Back
           </CardTitle>
-          <CardDescription className="text-gray-300">
+          <CardDescription className="text-sm md:text-base text-gray-300">
             Sign in to your SummerAize account
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-5 px-6 pb-6">
+        <CardContent className="space-y-4 md:space-y-5 px-4 md:px-6 pb-4 md:pb-6">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium text-gray-200">Email</Label>
@@ -156,12 +156,12 @@ const Login = () => {
 
             <Button
               type="submit"
-              className="w-full h-12 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg"
+              className="w-full h-11 md:h-12 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg text-sm md:text-base"
               disabled={loading}
             >
               {loading ? (
                 <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 md:h-5 md:w-5 animate-spin" />
                   Signing in...
                 </>
               ) : (
@@ -179,9 +179,9 @@ const Login = () => {
             variant="outline"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full h-12 bg-gray-800/60 border-gray-600 text-gray-100 hover:bg-gray-700/60 hover:text-white transition-all duration-300"
+            className="w-full h-11 md:h-12 bg-gray-800/60 border-gray-600 text-gray-100 hover:bg-gray-700/60 hover:text-white transition-all duration-300 text-sm md:text-base"
           >
-            <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
+            <svg className="mr-2 h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24">
               <path
                 fill="currentColor"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"

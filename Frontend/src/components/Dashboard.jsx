@@ -213,19 +213,19 @@ const Dashboard = () => {
                   }}
                 />
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold gradient-text">SummerAize</h1>
+              <h1 className="hidden md:block text-xl sm:text-2xl font-bold gradient-text">SummerAize</h1>
             </Link>
             <div className="flex items-center space-x-4">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="px-4 py-2 rounded-full transition-all duration-200 bg-gray-800/60 text-white border border-gray-700/60 hover:bg-gray-700/60"
+                    className="px-2 md:px-4 py-2 rounded-full transition-all duration-200 bg-gray-800/60 text-white border border-gray-700/60 hover:bg-gray-700/60"
                   >
-                    <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mr-2">
+                    <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center md:mr-2">
                       <span className="text-white text-xs font-semibold">{(me?.username || user?.username || '').charAt(0).toUpperCase()}</span>
                     </div>
-                    <span className="font-medium">{me?.username || user?.username}</span>
+                    <span className="hidden md:inline font-medium">{me?.username || user?.username}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-[220px]">
@@ -247,14 +247,14 @@ const Dashboard = () => {
               <Button
                 variant="outline"
                 onClick={() => setActiveTab('summaries')}
-                className={`px-4 py-2 rounded-lg transition-all duration-200 pointer-events-auto ${
+                className={`px-3 md:px-4 py-2 rounded-lg transition-all duration-200 pointer-events-auto text-sm md:text-base ${
                   activeTab === 'summaries'
                     ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg border-transparent'
                     : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:opacity-90 border-transparent'
                 }`}
               >
-                <FileText className="h-4 w-4 mr-2" />
-                Summaries
+                <FileText className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
+                <span className="hidden sm:inline">Summaries</span>
               </Button>
             </div>
           </div>
@@ -264,18 +264,18 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'home' && (
           <div className="max-w-5xl mx-auto">
-            <div className="text-center py-20 md:py-28 animate-slide-up">
-                <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-gray-800/60 text-white text-sm font-semibold mb-6 border border-gray-700/60">✨ <span className="gradient-text ml-1">Powered by AI</span></div>
-                <h1 className="text-4xl md:text-6xl font-extrabold leading-tight text-white">
-                  Transform PDFs into <span className="relative inline-block"><span className="relative z-10 px-2 rounded-md bg-pink-200 text-gray-900">concise</span></span> summaries
+            <div className="text-center py-12 md:py-20 lg:py-28 animate-slide-up px-4">
+                <div className="inline-flex items-center px-3 md:px-4 py-1.5 rounded-full bg-gray-800/60 text-white text-xs md:text-sm font-semibold mb-4 md:mb-6 border border-gray-700/60">✨ <span className="gradient-text ml-1">Powered by AI</span></div>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-extrabold leading-tight text-white px-2">
+                  Transform PDFs into <span className="relative inline-block"><span className="relative z-10 px-1 md:px-2 rounded-md bg-pink-200 text-gray-900">concise</span></span> summaries
                 </h1>
-                <p className="mt-4 md:mt-6 text-gray-300 text-lg">
+                <p className="mt-3 md:mt-4 lg:mt-6 text-gray-300 text-base md:text-lg px-2">
                   Get a beautiful summary reel of the document in seconds.
                 </p>
-                <div className="mt-10">
-                  <Button onClick={openUploaderFresh} className="h-12 px-8 text-lg bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-full inline-flex items-center gap-2">
+                <div className="mt-6 md:mt-8 lg:mt-10">
+                  <Button onClick={openUploaderFresh} className="h-11 md:h-12 px-6 md:px-8 text-base md:text-lg bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-full inline-flex items-center gap-2">
                     Try SummerAize
-                    <ArrowRight className="h-5 w-5" />
+                    <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
                   </Button>
                 </div>
             </div>
@@ -336,14 +336,14 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 gap-8">
               <div className="lg:col-span-2">
                 <Card className="glass-card hover-lift animate-slide-up" style={{animationDelay: '0.2s'}}>
-                  <CardHeader className="text-center pb-6">
-                    <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mb-4">
-                      <FileText className="h-8 w-8 text-white" />
+                  <CardHeader className="text-center pb-4 md:pb-6">
+                    <div className="mx-auto w-12 h-12 md:w-16 md:h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mb-3 md:mb-4">
+                      <FileText className="h-6 w-6 md:h-8 md:w-8 text-white" />
                     </div>
-                    <CardTitle className="text-2xl font-bold gradient-text">
+                    <CardTitle className="text-xl md:text-2xl font-bold gradient-text">
                       Your Summaries
                     </CardTitle>
-                    <CardDescription className="text-gray-300 text-lg">
+                    <CardDescription className="text-gray-300 text-sm md:text-lg">
                       View and manage your document summaries
                     </CardDescription>
                   </CardHeader>
@@ -367,21 +367,21 @@ const Dashboard = () => {
                       <div className="space-y-6">
                         {summaries.map((summary, index) => (
                           <Card key={summary._id} className="bg-gray-800/60 backdrop-blur-sm border border-gray-700/30 hover:border-gray-600/50 transition-all duration-300 hover:shadow-lg animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
-                            <CardContent className="p-6">
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1">
+                            <CardContent className="p-4 md:p-6">
+                              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                                <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-3 mb-3">
-                                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
                                       <FileText className="h-5 w-5 text-white" />
                                     </div>
-                                    <div>
-                                      <h3 className="font-bold text-gray-100 text-lg">
+                                    <div className="min-w-0 flex-1">
+                                      <h3 className="font-bold text-gray-100 text-base md:text-lg truncate">
                                         {summary.originalName}
                                       </h3>
-                                      <div className="flex items-center gap-4 text-sm text-gray-400">
+                                      <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-400 mt-1">
                                         <span className="flex items-center gap-1">
-                                          <Clock className="h-4 w-4" />
-                                          {formatDate(summary.createdAt)}
+                                          <Clock className="h-3 w-3 md:h-4 md:w-4" />
+                                          <span className="whitespace-nowrap">{formatDate(summary.createdAt)}</span>
                                         </span>
                                         <span className="px-2 py-1 bg-gray-700 rounded-full text-xs font-medium text-gray-100">
                                           {formatFileSize(summary.sizeBytes)}
@@ -391,9 +391,9 @@ const Dashboard = () => {
                                   </div>
                                   
                                   {summary.summaryText ? (
-                                    <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-4 rounded-xl border border-gray-600">
-                                      <div className="flex items-start justify-between mb-3">
-                                        <h4 className="font-semibold text-gray-100 flex items-center gap-2">
+                                    <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-3 md:p-4 rounded-xl border border-gray-600">
+                                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+                                        <h4 className="font-semibold text-gray-100 flex items-center gap-2 text-sm md:text-base">
                                           <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
                                           AI Summary Preview
                                         </h4>
@@ -401,47 +401,47 @@ const Dashboard = () => {
                                           variant="ghost"
                                           size="sm"
                                           onClick={() => viewFullSummary(summary)}
-                                          className="h-8 px-3 text-xs bg-gray-700/50 text-gray-100 border border-gray-600 hover:bg-gray-700/70 hover:text-gray-100 hover:border-gray-500 shrink-0 whitespace-nowrap"
+                                          className="h-8 px-3 text-xs bg-gray-700/50 text-gray-100 border border-gray-600 hover:bg-gray-700/70 hover:text-gray-100 hover:border-gray-500 shrink-0 whitespace-nowrap self-start sm:self-auto"
                                         >
                                           <Maximize2 className="h-3 w-3 mr-1" />
                                           Full View
                                         </Button>
                                       </div>
-                                      <p className="text-sm text-gray-200 leading-relaxed line-clamp-3 font-medium">
+                                      <p className="text-xs md:text-sm text-gray-200 leading-relaxed line-clamp-3 font-medium">
                                         {summary.summaryText}
                                       </p>
                                     </div>
                                   ) : (
-                                    <div className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 p-4 rounded-xl border border-yellow-700">
+                                    <div className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 p-3 md:p-4 rounded-xl border border-yellow-700">
                                       <div className="flex items-center gap-3">
-                                        <Loader2 className="h-5 w-5 text-yellow-400 animate-spin" />
+                                        <Loader2 className="h-4 w-4 md:h-5 md:w-5 text-yellow-400 animate-spin flex-shrink-0" />
                                         <div>
-                                          <div className="font-semibold text-yellow-200">Generating Summary</div>
-                                          <div className="text-sm text-yellow-300">AI is processing your document...</div>
+                                          <div className="font-semibold text-yellow-200 text-sm md:text-base">Generating Summary</div>
+                                          <div className="text-xs md:text-sm text-yellow-300">AI is processing your document...</div>
                                         </div>
                                       </div>
                                     </div>
                                   )}
                                 </div>
                                 
-                                <div className="flex items-center gap-2 ml-6">
+                                <div className="flex flex-row md:flex-col items-stretch md:items-center gap-2 md:ml-6">
                                   <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => handleView(summary._id)}
-                                    className="h-10 px-4 bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500"
+                                    className="h-10 px-3 md:px-4 bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500 flex-1 md:flex-none text-xs md:text-sm"
                                   >
-                                    <Eye className="h-4 w-4 mr-2" />
-                                    View
+                                    <Eye className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
+                                    <span className="hidden sm:inline md:inline">View</span>
                                   </Button>
                                   <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => handleDownload(summary._id)}
-                                    className="h-10 px-4 bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500"
+                                    className="h-10 px-3 md:px-4 bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500 flex-1 md:flex-none text-xs md:text-sm"
                                   >
-                                    <Download className="h-4 w-4 mr-2" />
-                                    Download
+                                    <Download className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
+                                    <span className="hidden sm:inline md:inline">Download</span>
                                   </Button>
                                   <AlertDialog>
                                     <AlertDialogTrigger asChild>
@@ -449,30 +449,30 @@ const Dashboard = () => {
                                         variant="outline"
                                         size="sm"
                                         disabled={deletingSummary === summary._id}
-                                        className="h-10 px-4 bg-gray-700/50 hover:bg-gray-700/70 border border-red-800 text-red-400 hover:text-red-300 hover:bg-red-900/20 hover:border-red-700"
+                                        className="h-10 px-3 md:px-4 bg-gray-700/50 border border-red-800 text-red-400 hover:text-red-300 hover:bg-red-900/20 hover:border-red-700 flex-1 md:flex-none text-xs md:text-sm"
                                       >
                                         {deletingSummary === summary._id ? (
-                                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                          <Loader2 className="h-3 w-3 md:h-4 md:w-4 md:mr-2 animate-spin" />
                                         ) : (
-                                          <Trash2 className="h-4 w-4 mr-2" />
+                                          <Trash2 className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
                                         )}
-                                        Delete
+                                        <span className="hidden sm:inline md:inline">Delete</span>
                                       </Button>
                                     </AlertDialogTrigger>
-                                    <AlertDialogContent className="glass-card">
+                                    <AlertDialogContent className="glass-card max-w-[90vw] md:max-w-md">
                                       <AlertDialogHeader>
-                                        <AlertDialogTitle className="text-xl font-bold text-red-400">
+                                        <AlertDialogTitle className="text-lg md:text-xl font-bold text-red-400">
                                           Delete Document
                                         </AlertDialogTitle>
-                                        <AlertDialogDescription className="text-gray-300">
+                                        <AlertDialogDescription className="text-sm md:text-base text-gray-300">
                                           Are you sure you want to delete "{summary.originalName}"? This action cannot be undone and will permanently remove the document from both your account and Google Drive.
                                         </AlertDialogDescription>
                                       </AlertDialogHeader>
-                                      <AlertDialogFooter>
-                                        <AlertDialogCancel className="border-gray-300">Cancel</AlertDialogCancel>
+                                      <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                                        <AlertDialogCancel className="border-gray-300 w-full sm:w-auto">Cancel</AlertDialogCancel>
                                         <AlertDialogAction 
                                           onClick={() => handleDelete(summary._id)}
-                                          className="bg-red-600 hover:bg-red-700 text-white"
+                                          className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto"
                                         >
                                           Delete Document
                                         </AlertDialogAction>
@@ -498,16 +498,16 @@ const Dashboard = () => {
       {/* Full Summary Modal */}
       {selectedSummary && (
         <AlertDialog open={!!selectedSummary} onOpenChange={closeFullSummary}>
-          <AlertDialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          <AlertDialogContent className="max-w-[95vw] md:max-w-5xl max-h-[90vh] overflow-y-auto mx-2 md:mx-auto">
             <AlertDialogHeader>
-              <div className="flex items-center justify-between">
-                <AlertDialogTitle className="flex items-center gap-3 text-2xl">
-                  <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                    <FileText className="h-6 w-6 text-white" />
+              <div className="flex items-start justify-between gap-3">
+                <AlertDialogTitle className="flex items-center gap-2 md:gap-3 text-lg md:text-2xl flex-1 min-w-0">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FileText className="h-4 w-4 md:h-6 md:w-6 text-white" />
                   </div>
-                  <div>
-                    <div className="gradient-text">{selectedSummary.originalName}</div>
-                    <div className="text-sm font-normal text-gray-400 mt-1">
+                  <div className="min-w-0 flex-1">
+                    <div className="gradient-text truncate">{selectedSummary.originalName}</div>
+                    <div className="text-xs md:text-sm font-normal text-gray-400 mt-1">
                       Complete AI-generated summary
                     </div>
                   </div>
@@ -516,49 +516,50 @@ const Dashboard = () => {
                   variant="ghost"
                   size="sm"
                   onClick={closeFullSummary}
-                  className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full"
+                  className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full flex-shrink-0"
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
             </AlertDialogHeader>
-            <div className="py-6">
-              <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-6 rounded-xl border border-gray-600">
-                <h4 className="font-bold text-gray-100 mb-4 text-lg flex items-center gap-2">
-                  <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
+            <div className="py-4 md:py-6">
+              <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-4 md:p-6 rounded-xl border border-gray-600">
+                <h4 className="font-bold text-gray-100 mb-3 md:mb-4 text-base md:text-lg flex items-center gap-2">
+                  <div className="w-2 h-2 md:w-3 md:h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
                   AI Summary
                 </h4>
-                <div className="prose prose-lg max-w-none">
-                  <p className="text-gray-200 whitespace-pre-wrap leading-relaxed text-base font-medium">
+                <div className="prose prose-sm md:prose-lg max-w-none">
+                  <p className="text-gray-200 whitespace-pre-wrap leading-relaxed text-sm md:text-base font-medium">
                     {selectedSummary.summaryText}
                   </p>
                 </div>
               </div>
-              <div className="mt-6 flex items-center justify-between">
-                <div className="flex items-center gap-6 text-sm text-gray-400">
+              <div className="mt-4 md:mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex flex-wrap items-center gap-3 md:gap-6 text-xs md:text-sm text-gray-400">
                   <span className="flex items-center gap-2">
-                    <Clock className="h-4 w-4" />
+                    <Clock className="h-3 w-3 md:h-4 md:w-4" />
                     {formatDate(selectedSummary.createdAt)}
                   </span>
-                  <span className="px-3 py-1 bg-gray-700 rounded-full text-xs font-medium text-gray-100">
+                  <span className="px-2 md:px-3 py-1 bg-gray-700 rounded-full text-xs font-medium text-gray-100">
                     {formatFileSize(selectedSummary.sizeBytes)}
                   </span>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-2 md:gap-3 w-full sm:w-auto">
                   <Button
                     variant="outline"
                     onClick={() => handleView(selectedSummary._id)}
-                    className="bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500"
+                    className="bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500 flex-1 sm:flex-none text-xs md:text-sm px-3 md:px-4"
                   >
-                    <Eye className="h-4 w-4 mr-2" />
-                    View Original
+                    <Eye className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
+                    <span className="hidden sm:inline">View Original</span>
+                    <span className="sm:hidden">View</span>
                   </Button>
                   <Button
                     variant="outline"
                     onClick={() => handleDownload(selectedSummary._id)}
-                    className="bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500"
+                    className="bg-gray-700/50 text-gray-100 hover:bg-gray-700/70 hover:text-gray-100 border border-gray-600 hover:border-gray-500 flex-1 sm:flex-none text-xs md:text-sm px-3 md:px-4"
                   >
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
                     Download
                   </Button>
                   <AlertDialog>
@@ -566,33 +567,33 @@ const Dashboard = () => {
                       <Button
                         variant="outline"
                         disabled={deletingSummary === selectedSummary._id}
-                        className="bg-gray-700/50 hover:bg-gray-700/70 border border-red-800 text-red-400 hover:text-red-300 hover:bg-red-900/20 hover:border-red-700"
+                        className="bg-gray-700/50 border border-red-800 text-red-400 hover:text-red-300 hover:bg-red-900/20 hover:border-red-700 flex-1 sm:flex-none text-xs md:text-sm px-3 md:px-4"
                       >
                         {deletingSummary === selectedSummary._id ? (
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          <Loader2 className="h-3 w-3 md:h-4 md:w-4 md:mr-2 animate-spin" />
                         ) : (
-                          <Trash2 className="h-4 w-4 mr-2" />
+                          <Trash2 className="h-3 w-3 md:h-4 md:w-4 md:mr-2" />
                         )}
                         Delete
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="glass-card">
+                    <AlertDialogContent className="glass-card max-w-[90vw] md:max-w-md">
                       <AlertDialogHeader>
-                        <AlertDialogTitle className="text-xl font-bold text-red-400">
+                        <AlertDialogTitle className="text-lg md:text-xl font-bold text-red-400">
                           Delete Document
                         </AlertDialogTitle>
-                        <AlertDialogDescription className="text-gray-300">
+                        <AlertDialogDescription className="text-sm md:text-base text-gray-300">
                           Are you sure you want to delete "{selectedSummary.originalName}"? This action cannot be undone and will permanently remove the document from both your account and Google Drive.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel className="border-gray-300">Cancel</AlertDialogCancel>
+                      <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                        <AlertDialogCancel className="border-gray-300 w-full sm:w-auto">Cancel</AlertDialogCancel>
                         <AlertDialogAction 
                           onClick={async () => {
                             await handleDelete(selectedSummary._id);
                             closeFullSummary();
                           }}
-                          className="bg-red-600 hover:bg-red-700 text-white"
+                          className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto"
                         >
                           Delete Document
                         </AlertDialogAction>
@@ -606,7 +607,7 @@ const Dashboard = () => {
               <div className="flex justify-center w-full">
                 <AlertDialogAction 
                   onClick={closeFullSummary}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-8 py-3 text-lg font-semibold"
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-6 md:px-8 py-2 md:py-3 text-base md:text-lg font-semibold w-full sm:w-auto"
                 >
                   Close Summary
                 </AlertDialogAction>
